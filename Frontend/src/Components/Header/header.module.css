@@ -1,0 +1,65 @@
+.Logo {
+    max-width: 70px;
+    background-color: #FAF6F1  !important;
+}
+
+.stackHeader{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.botoesMeio > button {
+    background-color: transparent;
+    border: none;
+    color: gray;
+    font-size: 18px;
+}
+
+.botoesMeio > button:hover {
+    background-color: unset !important;
+    color: unset !important;
+    border-color: unset !important;
+}
+
+.botaoCheckin {
+    background-color: #7A5C44 !important;
+    border: none !important;
+    min-width: 150px;
+}
+
+.botaoCheckin:hover {
+   background-color:  #83644bc9 !important;
+    border: unset !important;
+    
+}
+
+.botaoCheckin:active{
+    background-color:  #83644bc9 !important;
+}
+
+.botaoSair {
+    background-color: transparent !important;
+    color: black !important;
+    border: 2px solid  #7A5C44 !important;
+    min-width: 80px;
+}
+
+.botaoSair:hover{
+    background-color: unset !important;
+    color: unset !important;
+    border-color: unset !important;
+}
+
+.dropdown {
+    margin-right: 30px;
+}
+
+@media (max-width: 1024px){
+    .botoesMeio > button {
+        display: none;
+    }
+    .botoesFim > button {
+        display: none;
+    }
+}

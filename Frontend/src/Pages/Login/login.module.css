@@ -63,3 +63,12 @@
     max-width: 70px;
     background-color: #FAF6F1  !important;
 }
+
+@media (max-width: 768px) {
+    .fotoDiv {
+        display: none;
+    }
+    .formDiv {
+        padding: 12px;
+    }
+}
