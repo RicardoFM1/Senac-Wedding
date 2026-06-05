@@ -16,10 +16,17 @@
     font-size: 18px;
 }
 
+.botoesMeio > button:focus {
+    background-color: rgba(128, 128, 128, 0.322);
+    border: none;
+    color: black;
+    font-size: 18px;
+}
+
 .botoesMeio > button:hover {
-    background-color: unset !important;
-    color: unset !important;
-    border-color: unset !important;
+    background-color: rgba(128, 128, 128, 0.322) !important;
+    color: black !important;
+   
 }
 
 .botaoCheckin {

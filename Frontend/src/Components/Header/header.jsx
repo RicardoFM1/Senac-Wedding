@@ -2,9 +2,12 @@ import { Button, Container, Dropdown, Navbar, Stack } from "react-bootstrap";
 import logoCasamento from "../../assets/Logo_casamento.jpg";
 import style from "./header.module.css";
 import { IoIosMenu } from "react-icons/io";
+import { useNavigate } from "react-router";
 
 
-const Header = () => {
+const Header = ({telaAtiva, setTelaAtiva}) => {
+ 
+  const navigate = useNavigate();
   return (
     <Navbar fixed className="w-100 px-3 border-bottom ">
         <Stack direction="horizontal" className={style.stackHeader}>
@@ -20,14 +23,14 @@ const Header = () => {
       </Navbar.Brand>
       <Stack gap={4} direction="horizontal" className={style.botoesMeio}>
 
-          <Button>Dashboard</Button>
-          <Button>Convidados</Button>
-          <Button>Acompanhantes</Button>
-          <Button>Mesas</Button>
+          <Button onClick={() => setTelaAtiva('dashboard')}>Dashboard</Button>
+          <Button onClick={() => setTelaAtiva('convidados')}>Convidados</Button>
+          <Button onClick={() => setTelaAtiva('acompanhantes')}>Acompanhantes</Button>
+          <Button onClick={() => setTelaAtiva('mesas')}>Mesas</Button>
       </Stack>
 
     <Stack gap={4}  direction="horizontal" className={style.botoesFim}>
-        <Button className={style.botaoCheckin}>CHECK-IN</Button>
+        <Button onClick={() => setTelaAtiva('checkins')} className={style.botaoCheckin}>CHECK-IN</Button>
         <Button className={style.botaoSair}>Sair</Button>
         
 
@@ -38,11 +41,11 @@ const Header = () => {
                 <IoIosMenu size={25}/>
             </Dropdown.Toggle>
             <Dropdown.Menu className={style.dropdown}>
-                <Dropdown.Item onClick={() => console.log('checkin')}>Dashboard</Dropdown.Item>
-                <Dropdown.Item onClick={() => console.log('convidados')}>Convidados</Dropdown.Item>
-                <Dropdown.Item onClick={() => console.log('Acompanhantes')}>Acompanhantes</Dropdown.Item>
-                <Dropdown.Item onClick={() => console.log('Mesas')}>Mesas</Dropdown.Item>
-                <Dropdown.Item onClick={() => console.log('Checkins')}>Checkins</Dropdown.Item>
+                <Dropdown.Item onClick={() => setTelaAtiva('dashboard')}>Dashboard</Dropdown.Item>
+                <Dropdown.Item onClick={() => setTelaAtiva('convidados')}>Convidados</Dropdown.Item>
+                <Dropdown.Item onClick={() => setTelaAtiva('acompanhantes')}>Acompanhantes</Dropdown.Item>
+                <Dropdown.Item onClick={() => setTelaAtiva('mesas')}>Mesas</Dropdown.Item>
+                <Dropdown.Item onClick={() => setTelaAtiva('checkins')}>Checkins</Dropdown.Item>
                 <Dropdown.Item className="text-danger" onClick={() => console.log('SAIR')}>SAIR</Dropdown.Item>
 
 

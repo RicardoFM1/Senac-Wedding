@@ -1,0 +1,11 @@
+.stackButtons > button{
+    background-color: transparent !important;
+    color: black !important;
+    border: 2px solid  #7A5C44 !important;
+    min-width: 80px;
+}
+
+.stackButtons > button:focus {
+    background-color: #7A5C44 !important;
+    color: white !important; 
+}
