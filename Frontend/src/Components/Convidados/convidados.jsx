@@ -3,8 +3,67 @@ import style from "./convidados.module.css";
 import { FaSearch } from "react-icons/fa";
 import Tabela from "../Tabela/tabela";
 import { IoIosArrowForward } from "react-icons/io";
+import { useEffect, useState } from "react";
 
 const Convidados = () => {
+  const [search, setSearch] = useState("");
+
+  const rows = [
+    {
+      nome: "Ricardo5",
+      sobrenome: "Ricardo2",
+      email: "email",
+      cpf: "cpf",
+      telefone: "telefone",
+      categoria: "categoria",
+      confirmacao: "confirmação",
+      mesa_idmesa: 1,
+    },
+    {
+      nome: "Ricardo3",
+      sobrenome: "Ricardo2",
+      email: "email",
+      cpf: "cpf",
+      telefone: "telefone",
+      categoria: "categoria",
+      confirmacao: "cancelado",
+      mesa_idmesa: 1,
+    },
+    {
+      nome: "Ricardo2",
+      sobrenome: "Ricardo2",
+      email: "email",
+      cpf: "11111111111",
+      telefone: "telefone",
+      categoria: "categoria",
+      confirmacao: "pendente",
+      mesa_idmesa: 1,
+    },
+    {
+      nome: "Ricardo1",
+      sobrenome: "Ricardo2",
+      email: "email",
+      cpf: "05380295010",
+      telefone: "telefone",
+      categoria: "categoria",
+      confirmacao: "confirmado",
+      mesa_idmesa: 1,
+    },
+  ];
+
+  const [rowFiltrada, setRowFiltrada] = useState(rows);
+
+
+useEffect(() => {
+ setRowFiltrada(
+      rows.filter((c) =>
+        (c.nome + " " + c.confirmacao + " " + c.cpf)
+      .toLowerCase()
+      .includes(search?.toLowerCase()),
+    )
+  );
+}, [search])
+
   const columns = [
     { header: "Nome", accessor: "nome" },
     { header: "Sobrenome", accessor: "sobrenome" },
@@ -27,52 +86,14 @@ const Convidados = () => {
     },
   ];
 
-  const rows = [
-    {
-      nome: "Ricardo",
-      sobrenome: "Ricardo2",
-      email: "email",
-      cpf: "cpf",
-      telefone: "telefone",
-      categoria: "categoria",
-      confirmacao: "confirmação",
-      mesa_idmesa: 1,
-    },
-     {
-      nome: "Ricardo",
-      sobrenome: "Ricardo2",
-      email: "email",
-      cpf: "cpf",
-      telefone: "telefone",
-      categoria: "categoria",
-      confirmacao: "confirmação",
-      mesa_idmesa: 1,
-    }, {
-      nome: "Ricardo",
-      sobrenome: "Ricardo2",
-      email: "email",
-      cpf: "cpf",
-      telefone: "telefone",
-      categoria: "categoria",
-      confirmacao: "confirmação",
-      mesa_idmesa: 1,
-    }, {
-      nome: "Ricardo",
-      sobrenome: "Ricardo2",
-      email: "email",
-      cpf: "cpf",
-      telefone: "telefone",
-      categoria: "categoria",
-      confirmacao: "confirmação",
-      mesa_idmesa: 1,
-    },
-  ];
+
+
   return (
     <>
       <Stack className="d-flex flex-column flex-xl-row">
         <Stack className="fw-bold mx-5 my-5">
           <h1>Lista de convidados</h1>
-          <p className="text-muted">15 Convidados no total</p>
+          <p className="text-muted">{rows.length} Convidados no total</p>
         </Stack>
         <Stack
           className="px-5 flex-column flex-md-row"
@@ -84,19 +105,26 @@ const Convidados = () => {
               <InputGroup.Text>
                 <FaSearch color="gray" />
               </InputGroup.Text>
-              <Form.Control placeholder="Buscar um convidado" />
+              <Form.Control
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Buscar um convidado"
+              />
             </InputGroup>
           </Form>
 
           <Stack className={style.stackButtons} gap={3} direction="horizontal">
-            <Button>Todos</Button>
-            <Button>Confirmados</Button>
-            <Button>Pendentes</Button>
-            <Button>Cancelados</Button>
+            <Button onClick={() => setSearch("")}>Todos</Button>
+            <Button onClick={() => setSearch("confirmado")}>Confirmados</Button>
+            <Button onClick={() => setSearch("pendente")}>Pendentes</Button>
+            <Button onClick={() => setSearch("cancelado")}>Cancelados</Button>
           </Stack>
         </Stack>
       </Stack>
-      <Tabela columns={columns} rows={rows} keyField={"id_convidado"} />
+      <Tabela
+        columns={columns}
+        rows={rowFiltrada}
+        keyField={"id_convidado"}
+      />
     </>
   );
 };

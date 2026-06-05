@@ -11,3 +11,27 @@
   color: rgb(99, 99, 99) !important;
   padding: 15px !important;
 }
+
+.spanConfirmacao{
+  background-color: #3dd66348;
+  color:  #12e647;
+  padding: 6px;
+  border-radius: 10px;
+  font-weight: bold;
+}
+
+.spanPendente {
+  background-color: #c7d63d2f;
+  color:  #b8e612;
+  padding: 6px;
+  border-radius: 10px;
+  font-weight: bolder;
+}
+
+.spanCancelado{
+background-color: #d63d5148;
+  color:  #e61224;
+  padding: 6px;
+  border-radius: 10px;
+  font-weight: bold;
+}

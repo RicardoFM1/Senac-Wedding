@@ -16,11 +16,11 @@
     font-size: 18px;
 }
 
-.botoesMeio > button:focus {
-    background-color: rgba(128, 128, 128, 0.322);
-    border: none;
-    color: black;
-    font-size: 18px;
+.botaoAtivo {
+    background-color: rgba(128, 128, 128, 0.322) !important;
+    border: none !important;
+    color: black !important;
+    font-size: 18px !important;
 }
 
 .botoesMeio > button:hover {
@@ -41,9 +41,7 @@
     
 }
 
-.botaoCheckin:active{
-    background-color:  #83644bc9 !important;
-}
+
 
 .botaoSair {
     background-color: transparent !important;

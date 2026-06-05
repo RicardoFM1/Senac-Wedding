@@ -17,3 +17,8 @@ body, html {
   padding: 0;
   background-color: #FAF6F1;
 }
+
+input {
+  background-color: #F5EDE4 !important; 
+  
+}
