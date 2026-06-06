@@ -1,70 +1,65 @@
-.Logo {
-    max-width: 70px;
-    background-color: #FAF6F1  !important;
+.navbar {
+  display: flex;
+  width: 100% !important;
+  border-bottom: 3px rgb(139, 80, 62) !important;
 }
 
-.stackHeader{
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
+.stackGeral {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+.logo {
+  max-width: 70px;
 }
 
 .botoesMeio > button {
-    background-color: transparent;
-    border: none;
-    color: gray;
-    font-size: 18px;
-}
-
-.botaoAtivo {
-    background-color: rgba(128, 128, 128, 0.322) !important;
-    border: none !important;
-    color: black !important;
-    font-size: 18px !important;
+  background-color: unset;
+  color: unset !important;
+  border: unset !important;
 }
 
 .botoesMeio > button:hover {
-    background-color: rgba(128, 128, 128, 0.322) !important;
-    color: black !important;
-   
+  background-color: rgba(184, 183, 183, 0.397) !important;
+}
+
+.botaoAtivo {
+  background-color: rgba(184, 183, 183, 0.397) !important;
+  border: none !important;
+  font-size: 18px !important;
 }
 
 .botaoCheckin {
-    background-color: #7A5C44 !important;
-    border: none !important;
-    min-width: 150px;
+  background-color: rgb(126, 79, 52) !important;
+  border: none;
 }
-
-.botaoCheckin:hover {
-   background-color:  #83644bc9 !important;
-    border: unset !important;
-    
-}
-
-
 
 .botaoSair {
-    background-color: transparent !important;
-    color: black !important;
-    border: 2px solid  #7A5C44 !important;
-    min-width: 80px;
+  border: 1px solid rgb(126, 79, 52) !important;
+  background-color: transparent;
+  color: black !important;
 }
 
-.botaoSair:hover{
-    background-color: unset !important;
-    color: unset !important;
-    border-color: unset !important;
+.botaoSair:hover {
+  border: 1px solid rgba(126, 79, 52, 0.712) !important;
+  background-color: transparent;
+  color: black !important;
 }
 
-.dropdown {
-    margin-right: 30px;
+
+
+.dropdownMenu > a > button{
+    background-color: unset ;
+    border: unset;
+    color: black
 }
 
 @media (max-width: 1024px){
-    .botoesMeio > button {
+    .botoesMeio {
         display: none;
     }
-    .botoesFim > button {
+    .botoesFim {
         display: none;
     }
 }
+

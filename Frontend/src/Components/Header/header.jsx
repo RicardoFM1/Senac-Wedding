@@ -1,59 +1,123 @@
-import { Button, Container, Dropdown, Navbar, Stack } from "react-bootstrap";
-import logoCasamento from "../../assets/Logo_casamento.jpg";
+import { Button, Dropdown, Navbar, Stack } from "react-bootstrap";
+import logo from "../../assets/Logo_casamento.jpg";
 import style from "./header.module.css";
-import { IoIosMenu } from "react-icons/io";
 import { useNavigate } from "react-router";
-import { FaCheck } from "react-icons/fa6";
+import { IoMdMenu } from "react-icons/io";
+import Api from "../../Service/api";
+import { useEffect, useState } from "react";
 
-
-
-const Header = ({telaAtiva, setTelaAtiva}) => {
- 
+const Header = ({ telaAtiva, setTelaAtiva }) => {
   const navigate = useNavigate();
+  const handleSair = () => {
+    localStorage.clear();
+    navigate("/login");
+  };
+
+  const [retrieve, setRetrieve] = useState([]);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  const buscarRetrieve = async () => {
+    try {
+      const res = await Api.get("/retrieve");
+
+      if (res.status === 200) {
+        setRetrieve(res.data.dados);
+        console.log(res.data.dados);
+        setIsAdmin(res.data.dados.cargo_usuario === "administrador");
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    buscarRetrieve();
+  }, []);
   return (
-    <Navbar fixed className="w-100 px-3 border-bottom ">
-        <Stack direction="horizontal" className={style.stackHeader}>
-      <Navbar.Brand>
-          <Stack gap={3} direction="horizontal">
-            <img
-              src={logoCasamento}
-              alt="Logo casamento"
-              className={style.Logo}
-            />
+    <Navbar className="w-100 px-3 border-bottom" fixed>
+      <Stack className={style.stackGeral} direction="horizontal">
+        <Navbar.Brand>
+          <Stack direction="horizontal" className="mx-2" gap={3}>
+            <img src={logo} className={style.logo} alt="Logo casamento" />
             <h2 className="my-0">Senac Wedding</h2>
           </Stack>
-      </Navbar.Brand>
-      <Stack gap={4} direction="horizontal" className={style.botoesMeio}>
-
-          <Button onClick={() => setTelaAtiva('dashboard') } className={telaAtiva === 'dashboard' ? style.botaoAtivo : ""}>Dashboard</Button>
-          <Button onClick={() => setTelaAtiva('convidados')} className={telaAtiva === 'convidados' ? style.botaoAtivo : ""}>Convidados</Button>
-          <Button onClick={() => setTelaAtiva('acompanhantes')} className={telaAtiva === 'acompanhantes' ? style.botaoAtivo : ""}>Acompanhantes</Button>
-          <Button onClick={() => setTelaAtiva('mesas')} className={telaAtiva === 'mesas' ? style.botaoAtivo : ""}>Mesas</Button>
-      </Stack>
-
-    <Stack gap={4}  direction="horizontal" className={style.botoesFim}>
-        <Button onClick={() => setTelaAtiva('checkins')} className={style.botaoCheckin}><FaCheck className="mx-2" />
-        CHECK-IN</Button>
-        <Button className={style.botaoSair} onClick={() => navigate('/login')}>Sair</Button>
-        
-
-    </Stack>
+        </Navbar.Brand>
+        <Stack gap={3} direction="horizontal" className={style.botoesMeio}>
+          {isAdmin && (
+            <Button
+              onClick={() => setTelaAtiva("dashboard")}
+              className={telaAtiva === "dashboard" ? style.botaoAtivo : ""}
+            >
+              Dashboard
+            </Button>
+          )}
+          <Button
+            onClick={() => setTelaAtiva("convidados")}
+            className={telaAtiva === "convidados" ? style.botaoAtivo : ""}
+          >
+            Convidados
+          </Button>
+          <Button
+            onClick={() => setTelaAtiva("acompanhantes")}
+            className={telaAtiva === "acompanhantes" ? style.botaoAtivo : ""}
+          >
+            Acompanhantes
+          </Button>
+          <Button
+            onClick={() => setTelaAtiva("mesas")}
+            className={telaAtiva === "mesas" ? style.botaoAtivo : ""}
+          >
+            Mesas
+          </Button>
         </Stack>
-        <Dropdown drop="start" className="px-3 py-0 d-block d-xl-none">
-            <Dropdown.Toggle className="bg-transparent text-black border" id="menu">
-                <IoIosMenu size={25}/>
-            </Dropdown.Toggle>
-            <Dropdown.Menu className={style.dropdown}>
-                <Dropdown.Item onClick={() => setTelaAtiva('dashboard')} >Dashboard</Dropdown.Item>
-                <Dropdown.Item onClick={() => setTelaAtiva('convidados')}>Convidados</Dropdown.Item>
-                <Dropdown.Item onClick={() => setTelaAtiva('acompanhantes')}>Acompanhantes</Dropdown.Item>
-                <Dropdown.Item onClick={() => setTelaAtiva('mesas')}>Mesas</Dropdown.Item>
-                <Dropdown.Item onClick={() => setTelaAtiva('checkins')}>Checkins</Dropdown.Item>
-                <Dropdown.Item className="text-danger" onClick={() => navigate('/login')}>SAIR</Dropdown.Item>
 
-
-            </Dropdown.Menu>
-        </Dropdown>
+        <Stack gap={3} direction="horizontal" className={style.botoesFim}>
+          <Button
+            onClick={() => setTelaAtiva("checkins")}
+            className={style.botaoCheckin}
+          >
+            Checkin
+          </Button>
+          <Button onClick={handleSair} className={style.botaoSair}>
+            Sair
+          </Button>
+        </Stack>
+      </Stack>
+      <Dropdown className="px-3 py-0 d-block d-xl-none" drop="start">
+        <Dropdown.Toggle className="bg-transparent text-black border" id="menu">
+          <IoMdMenu size={25} />
+        </Dropdown.Toggle>
+        <Dropdown.Menu className={style.dropdownMenu}>
+          <Dropdown.Item>
+            {isAdmin && (
+              <Button onClick={() => setTelaAtiva("dashboard")}>
+                Dashboard
+              </Button>
+            )}
+          </Dropdown.Item>
+          <Dropdown.Item>
+            <Button onClick={() => setTelaAtiva("convidados")}>
+              Convidados
+            </Button>
+          </Dropdown.Item>
+          <Dropdown.Item>
+            <Button onClick={() => setTelaAtiva("acompanhantes")}>
+              Acompanhantes
+            </Button>
+          </Dropdown.Item>
+          <Dropdown.Item>
+            <Button onClick={() => setTelaAtiva("mesas")}>Mesas</Button>
+          </Dropdown.Item>
+          <Dropdown.Item>
+            <Button onClick={() => setTelaAtiva("checkins")}>Checkins</Button>
+          </Dropdown.Item>
+          <Dropdown.Item>
+            <Button onClick={handleSair} className="text-danger">
+              Sair
+            </Button>
+          </Dropdown.Item>
+        </Dropdown.Menu>
+      </Dropdown>
     </Navbar>
   );
 };
