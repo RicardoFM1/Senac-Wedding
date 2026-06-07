@@ -4,115 +4,116 @@ import styles from "./dashboard.module.css";
 import { useNavigate } from "react-router";
 
 const Dashboard = () => {
-   const [retrieve, setRetrieve] = useState([]);
-    const [isAdmin, setIsAdmin] = useState(false);
-  
-    const buscarRetrieve = async () => {
-      try {
-        const res = await Api.get("/retrieve");
-  
-        if (res.status === 200) {
-          setRetrieve(res.data.dados);
-          console.log(res.data.dados);
-          setIsAdmin(res.data.dados.cargo_usuario === "administrador");
-        }
-      } catch (err) {
-        console.log(err);
-      }
-    };
-  
-      const navigate = useNavigate()
-    useEffect(() => {
-      buscarRetrieve();
-      if(!isAdmin){
-        navigate('/')
-      }
-    }, []);
+  const [retrieve, setRetrieve] = useState([]);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [dashboard, setDashboard] = useState([]);
+  const navigate = useNavigate();
 
-  const stats = {
-    totalConvidados: 12,
-    acompanhantes: 10,
-    confirmados: 7,
-    pendentes: 3,
-    recusados: 2,
+  const buscarRetrieve = async () => {
+    try {
+      const res = await Api.get("/retrieve");
+
+      if (res.status === 200) {
+        setRetrieve(res.data.dados);
+        console.log(res.data.dados);
+        setIsAdmin(res.data.dados.cargo_usuario === "administrador");
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
 
-  const percentualConfirmado = Math.round((stats.confirmados / stats.totalConvidados) * 100);
-  const percentualRecusado = Math.round((stats.recusados / stats.totalConvidados) * 100);
+  const buscarDashboard = async () => {
+    try {
+      const res = await Api.get("/dashboard");
+      
+      if (res.status === 200) {
+        setDashboard(res.data.dados?.convidados);
+        console.log(res.data.dados)
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    buscarRetrieve();
+    buscarDashboard();
+    if (!isAdmin) {
+      navigate("/");
+    }
+  }, []);
+
+  const percentualConfirmado = Math.round(
+    (dashboard?.confirmados / dashboard?.total) || 0 * 100 
+  );
+  const percentualCancelado = Math.round(
+    (dashboard?.recusados / dashboard?.total) || 0 * 100,
+  );
 
   return (
     <div className={styles.dashboardContainer}>
-    
       <div className={styles.header}>
         <h1>Dashboard</h1>
         <p>Visualize e monitore o sistema</p>
       </div>
 
-     
       <div className={styles.statsGrid}>
-       
         <div className={styles.statCard}>
           <div className={styles.statLabel}>Total Convidados</div>
-          <div className={styles.statValue}>{stats.totalConvidados}</div>
-          <div className={styles.statSubtext}>{stats.acompanhantes} com acompanhantes</div>
+          <div className={styles.statValue}>{dashboard?.total}</div>
+          
         </div>
 
-      
         <div className={styles.statCard}>
-          <div className={`${styles.statLabel} ${styles.labelConfirmado}`}>Confirmados</div>
-          <div className={styles.statValue}>{stats.confirmados}</div>
-          <div className={styles.statSubtext}>{percentualConfirmado}% do total</div>
+          <div className={`${styles.statLabel} ${styles.labelConfirmado}`}>
+            Confirmados
+          </div>
+          <div className={styles.statValue}>{dashboard.confirmados}</div>
+          <div className={styles.statSubtext}>
+            {percentualConfirmado}% do total
+          </div>
         </div>
 
-       
         <div className={styles.statCard}>
-          <div className={`${styles.statLabel} ${styles.labelPendente}`}>Pendentes</div>
-          <div className={styles.statValue}>{stats.pendentes}</div>
+          <div className={`${styles.statLabel} ${styles.labelPendente}`}>
+            Pendentes
+          </div>
+          <div className={styles.statValue}>{dashboard.pendentes}</div>
           <div className={styles.statSubtext}>aguardando resposta</div>
         </div>
 
-        
         <div className={styles.statCard}>
-          <div className={`${styles.statLabel} ${styles.labelRecusado}`}>Recusados</div>
-          <div className={styles.statValue}>{stats.recusados}</div>
-          <div className={styles.statSubtext}>{percentualRecusado}% do total</div>
+          <div className={`${styles.statLabel} ${styles.labelRecusado}`}>
+            Cancelados
+          </div>
+          <div className={styles.statValue}>{dashboard.cancelados}</div>
+          <div className={styles.statSubtext}>
+            {percentualCancelado}% do total
+          </div>
         </div>
       </div>
 
-      {/* Progress Section */}
+      
       <div className={styles.progressSection}>
         <div className={styles.progressHeader}>
           <h3 className={styles.progressTitle}>Progresso das confirmações</h3>
           <span className={styles.progressCounter}>
-            {stats.confirmados} de {stats.totalConvidados}
+            {dashboard.confirmados} de {dashboard.total}
           </span>
         </div>
 
-      
         <div className={styles.progressBarContainer}>
           <div
             className={styles.progressBar}
             style={{
-              width: `${(stats.confirmados / stats.totalConvidados) * 100}%`,
+              width: `${(dashboard.confirmados / dashboard.total) * 100}%`,
             }}
           />
         </div>
 
-       
-        <div className={styles.progressLegend}>
-          <div className={styles.legendItem}>
-            <div className={`${styles.legendDot} ${styles.dotConfirmado}`} />
-            <span>Confirmados ({stats.confirmados})</span>
-          </div>
-          <div className={styles.legendItem}>
-            <div className={`${styles.legendDot} ${styles.dotPendente}`} />
-            <span>Pendentes ({stats.pendentes})</span>
-          </div>
-          <div className={styles.legendItem}>
-            <div className={`${styles.legendDot} ${styles.dotRecusado}`} />
-            <span>Recusados ({stats.recusados})</span>
-          </div>
-        </div>
+        
+        
       </div>
     </div>
   );

@@ -35,3 +35,7 @@ background-color: #d63d5148;
   border-radius: 10px;
   font-weight: bold;
 }
+
+.linha {
+  cursor: pointer;
+}

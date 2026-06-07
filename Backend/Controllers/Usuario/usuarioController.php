@@ -81,6 +81,8 @@ class UsuarioController
         try {
             $this->apenasAdmin();
             $dados = json_decode(file_get_contents('php://input'), true);
+            $this->validarDados($dados);
+
             http_response_code(201);
             echo json_encode($this->usuarioService->criarUsuario($dados));
 
@@ -117,6 +119,8 @@ class UsuarioController
         try {
             $this->apenasAdmin();
             $dados = json_decode(file_get_contents('php://input'), true);
+            $this->validarDados($dados);
+
             $email = $_GET['email_usuario'];
             http_response_code(200);
             echo json_encode($this->usuarioService->atualizarUsuario($dados, $email));

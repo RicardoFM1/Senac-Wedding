@@ -48,10 +48,10 @@ class ConvidadoService
             throw new Exception('Dados inválidos', 400);
         }
 
-        $buscar = $this->db->prepare('SELECT * FROM convidado WHERE id_mesa = :id_mesa');
+        $buscar = $this->db->prepare('SELECT * FROM convidado WHERE mesa_idmesa = :mesa_idmesa');
 
         $buscar->execute([
-            ':id_mesa' => $idMesa
+            ':mesa_idmesa' => $idMesa
         ]);
 
         $convidados = $buscar->fetchAll();
@@ -153,8 +153,12 @@ class ConvidadoService
                 throw new Exception($convidado['mensagem'], $convidado['codigo']);
             }
 
-            if ($convidadoDados['confirmacao'] !== 'cancelado') {
+
+            if ($convidadoDados['confirmacao'] === 'confirmado' || $convidadoDados['confirmacao'] === 'pendente') {
                 throw new Exception('Só é possível cancelar um convidado', 400);
+            }
+            if (!isset($convidadoDados['confirmacao']) || $convidadoDados['confirmacao'] === '') {
+                $convidadoDados['confirmacao'] = $convidado['dados']['confirmacao'];
             }
 
             if ($convidado['dados']['confirmacao'] === 'confirmado') {
@@ -181,6 +185,7 @@ class ConvidadoService
                 ':email' => $convidadoDados['email'],
                 ':cpf' => $convidadoDados['cpf'],
                 ':telefone' => $convidadoDados['telefone'],
+                ":confirmacao" => $convidadoDados['confirmacao'],
                 ':categoria' => $convidadoDados['categoria'],
                 ':mesa_idmesa' => $convidadoDados['mesa_idmesa'],
                 ':email_antigo' => $emailConvidado

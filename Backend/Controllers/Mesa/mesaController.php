@@ -64,6 +64,8 @@ class MesaController
         try {
             Middleware::validarMiddleware();
             $dados = json_decode(file_get_contents('php://input'), true);
+            $this->validarDados($dados);
+
             http_response_code(201);
             echo json_encode($this->mesaService->criarMesa($dados));
 
@@ -85,6 +87,8 @@ class MesaController
         try {
             Middleware::validarMiddleware();
             $dados = json_decode(file_get_contents('php://input'), true);
+            $this->validarDados($dados);
+
             $id = $_GET['id_mesa'];
             http_response_code(200);
             echo json_encode($this->mesaService->atualizarMesa($dados, $id));

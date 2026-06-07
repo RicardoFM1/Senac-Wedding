@@ -8,7 +8,7 @@ class DashboardController
         $convidados = new ConvidadoService()->listarConvidados();
 
         $convidadosConfirmados = null;
-        $convidadosNaoConfirmados = null;
+        $convidadosPendentes = null;
         $convidadosCancelados = null;
 
         foreach ($convidados['dados'] as $convidado) {
@@ -17,7 +17,7 @@ class DashboardController
             }
 
             if ($convidado['confirmacao'] === 'não confirmado') {
-                $convidadosNaoConfirmados++;
+                $convidadosPendentes++;
             }
 
             if ($convidado['confirmacao'] === 'cancelado') {
@@ -31,10 +31,10 @@ class DashboardController
             'dados' => [
                 'convidados' => [
                     'listagem' => $convidados['dados'] ?? [],
-                    'confirmados' => $convidadosConfirmados,
-                    'nao_confirmados' => $convidadosNaoConfirmados,
-                    'cancelados' => $convidadosCancelados,
-                    'total' => count($convidados['dados'])
+                    'confirmados' => $convidadosConfirmados ?? 0,
+                    'pendentes' => $convidadosPendentes ?? 0,
+                    'cancelados' => $convidadosCancelados ?? 0,
+                    'total' => count($convidados['dados']) ?? 0
                 ]
             ]
         ]);

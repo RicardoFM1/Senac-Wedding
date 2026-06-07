@@ -4,65 +4,45 @@ import { FaSearch } from "react-icons/fa";
 import Tabela from "../Tabela/tabela";
 import { IoIosArrowForward } from "react-icons/io";
 import { useEffect, useState } from "react";
+import Api from "../../Service/api";
+import ConvidadoModal from "../Modais/Convidado/convidadoModal";
+import { toast } from "react-toastify";
 
 const Convidados = () => {
   const [search, setSearch] = useState("");
+  const [convidados, setConvidados] = useState([]);
+  const [convidadosFiltrados, setConvidadosFiltrados] = useState();
+  const [convidadoSelecionado, setConvidadoSelecionado] = useState([]);
+  const [show, setShow] = useState(false);
 
-  const rows = [
-    {
-      nome: "Ricardo5",
-      sobrenome: "Ricardo2",
-      email: "email",
-      cpf: "cpf",
-      telefone: "telefone",
-      categoria: "categoria",
-      confirmacao: "confirmação",
-      mesa_idmesa: 1,
-    },
-    {
-      nome: "Ricardo3",
-      sobrenome: "Ricardo2",
-      email: "email",
-      cpf: "cpf",
-      telefone: "telefone",
-      categoria: "categoria",
-      confirmacao: "cancelado",
-      mesa_idmesa: 1,
-    },
-    {
-      nome: "Ricardo2",
-      sobrenome: "Ricardo2",
-      email: "email",
-      cpf: "11111111111",
-      telefone: "telefone",
-      categoria: "categoria",
-      confirmacao: "pendente",
-      mesa_idmesa: 1,
-    },
-    {
-      nome: "Ricardo1",
-      sobrenome: "Ricardo2",
-      email: "email",
-      cpf: "05380295010",
-      telefone: "telefone",
-      categoria: "categoria",
-      confirmacao: "confirmado",
-      mesa_idmesa: 1,
-    },
-  ];
+  const buscarConvidados = async () => {
+    try {
+      const res = await Api.get("/convidado");
 
-  const [rowFiltrada, setRowFiltrada] = useState(rows);
+      if (res.status === 200) {
+        setConvidados(res.data.dados);
+        setConvidadosFiltrados(res.data.dados);
 
+        console.log(res.data.dados);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
-useEffect(() => {
- setRowFiltrada(
-      rows.filter((c) =>
+  useEffect(() => {
+    buscarConvidados();
+  }, []);
+
+  useEffect(() => {
+    setConvidadosFiltrados(
+      convidados.filter((c) =>
         (c.nome + " " + c.confirmacao + " " + c.cpf)
-      .toLowerCase()
-      .includes(search?.toLowerCase()),
-    )
-  );
-}, [search])
+          .toLowerCase()
+          .includes(search?.toLowerCase()),
+      ),
+    );
+  }, [search]);
 
   const columns = [
     { header: "Nome", accessor: "nome" },
@@ -86,31 +66,86 @@ useEffect(() => {
     },
   ];
 
+  const handleNovo = () => {
+    setShow(!show);
+    setConvidadoSelecionado(null);
+  };
 
+  const handleSelected = (row) => {
+    setShow(!show);
+    setConvidadoSelecionado(row);
+  };
+
+  const handleFechar = () => {
+    setShow(false);
+    setConvidadoSelecionado(null);
+    buscarConvidados()
+  };
+
+  const enviarDados = async (dados) => {
+    try {
+      let res;
+
+      if (convidadoSelecionado) {
+        res = await Api.put(
+          `/convidado?email_convidado=${convidadoSelecionado.email}`,
+          dados,
+        );
+
+        if (res.status === 200) {
+          toast.success(res.data.mensagem || "Sucesso ao atualizar convidado");
+          handleFechar()
+          return;
+        }
+      } else {
+        res = await Api.post("/convidado", dados);
+
+        if (res.status === 201) {
+          toast.success(res.data.mensagem || "Sucesso ao registrar convidado");
+          handleFechar()
+          return;
+
+        }
+      }
+    } catch (err) {
+      const erros = err.response?.data?.erros;
+
+      if (erros) {
+        Object.values(erros).forEach((msg) => {
+          toast.error(msg);
+        });
+      } else {
+        toast.error(err.response?.data?.mensagem || "Erro ao enviar dados");
+      }
+    }
+  };
 
   return (
     <>
       <Stack className="d-flex flex-column flex-xl-row">
         <Stack className="fw-bold mx-5 my-5">
           <h1>Lista de convidados</h1>
-          <p className="text-muted">{rows.length} Convidados no total</p>
+          <p className="text-muted">
+            {convidadosFiltrados?.length} Convidado(s) no total
+          </p>
+          <p className="text-muted">
+            Clique na linha da tabela para acessar mais informações
+          </p>
         </Stack>
         <Stack
           className="px-5 flex-column flex-md-row"
           direction="horizontal"
           gap={3}
         >
-          <Form>
-            <InputGroup>
-              <InputGroup.Text>
-                <FaSearch color="gray" />
-              </InputGroup.Text>
-              <Form.Control
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Buscar um convidado"
-              />
-            </InputGroup>
-          </Form>
+          <InputGroup>
+            <InputGroup.Text>
+              <FaSearch color="gray" />
+            </InputGroup.Text>
+            <Form.Control
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Buscar um convidado"
+            />
+          </InputGroup>
 
           <Stack className={style.stackButtons} gap={3} direction="horizontal">
             <Button onClick={() => setSearch("")}>Todos</Button>
@@ -120,10 +155,20 @@ useEffect(() => {
           </Stack>
         </Stack>
       </Stack>
+      <Button onClick={handleNovo} className={style.botaoAdicionar}>
+        Adicionar registro
+      </Button>
       <Tabela
         columns={columns}
-        rows={rowFiltrada}
+        rows={convidadosFiltrados}
         keyField={"id_convidado"}
+        handleSelected={handleSelected}
+      />
+      <ConvidadoModal
+        dados={convidadoSelecionado}
+        show={show}
+        handleClose={handleFechar}
+        submit={enviarDados}
       />
     </>
   );

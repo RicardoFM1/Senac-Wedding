@@ -1,6 +1,7 @@
 import { Container, Table } from "react-bootstrap";
 import style from "./tabela.module.css";
 const Tabela = ({ columns, rows, keyField, handleSelected }) => {
+  const temDados = rows && rows.length > 0
   return (
     <Container fluid className="mt-4">
       <Table className={style.tabela} responsive hover>
@@ -14,11 +15,14 @@ const Tabela = ({ columns, rows, keyField, handleSelected }) => {
           </tr>
         </thead>
         <tbody>
-          {rows?.map((row) => (
-            <tr
+          {temDados ? (
+
+            rows?.map((row) => (
+              <tr
+              className={style.linha}
               onClick={() => handleSelected(row)}
               key={row[keyField]}
-            >
+              >
               {columns?.map((column) => (
                 <td className="px-3" key={column.accessor}>
                   {column.render ? (
@@ -34,13 +38,17 @@ const Tabela = ({ columns, rows, keyField, handleSelected }) => {
                   ) : row[column.accessor] === "cancelado" ? ( <span className={style.spanCancelado}>
                       {row[column.accessor]}
                     </span>) : (
-                    row[column.accessor]
+                      row[column.accessor]
                   )}
                 </td>
               ))}
             </tr>
-          ))}
-        </tbody>
+          ))
+          
+        ) : (
+          <td colSpan={columns.length} className="text-center text-muted py-3">Sem dados</td>
+        )}
+          </tbody>
       </Table>
     </Container>
   );

@@ -3,38 +3,29 @@ import { Button, Form, InputGroup, Stack } from "react-bootstrap";
 import { FaSearch } from "react-icons/fa";
 import { IoIosArrowForward } from "react-icons/io";
 import Tabela from "../Tabela/tabela";
-
-const checkins = [
-  {
-    id: 1,
-    numero: 1,
-    usuario: "Admin",
-    convidado: "Mariana Gomes",
-    dataHora: "05/06/2026 18:30",
-  },
-  {
-    id: 2,
-    numero: 2,
-    usuario: "Recepção",
-    convidado: "Lucas Fernandes",
-    dataHora: "05/06/2026 19:05",
-  },
-  {
-    id: 3,
-    numero: 3,
-    usuario: "Recepção",
-    convidado: "Camila Souza",
-    dataHora: "05/06/2026 19:20",
-  },
-];
+import Api from "../../Service/api";
 
 const Checkins = () => {
   const [search, setSearch] = useState("");
-  const [rowFiltrada, setRowFiltrada] = useState(checkins);
+  const [checkins, setCheckins] = useState([]);
+  const [checkinsFiltrados, setCheckinsFiltrados] = useState();
+
+  const buscarCheckins = async () => {
+    try {
+      const res = await Api.get("/checkin");
+
+      if (res.status === 200) {
+        setCheckins(res.data.dados);
+        setCheckinsFiltrados(res.data.dados)
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const handleFiltragem = () => {
     const termo = search?.toLowerCase() || "";
-    setRowFiltrada(
+    setCheckinsFiltrados(
       checkins.filter((item) =>
         `${item.numero} ${item.usuario} ${item.convidado} ${item.dataHora}`
           .toLowerCase()
@@ -42,6 +33,10 @@ const Checkins = () => {
       ),
     );
   };
+
+  useEffect(() => {
+    buscarCheckins();
+  }, []);
 
   useEffect(() => {
     handleFiltragem();
@@ -53,24 +48,27 @@ const Checkins = () => {
         <Stack className="fw-bold mx-5 my-5">
           <h1>Checkins</h1>
           <p className="text-muted">Confirme o checkin de algum convidado</p>
+          <p className="text-muted">
+            {checkinsFiltrados?.length} checkin(s) no total
+          </p>
+          <p className="text-muted">Clique na linha da tabela para acessar mais informações</p>
+
         </Stack>
         <Stack
           className="px-5 flex-column flex-md-row"
           direction="horizontal"
           gap={3}
         >
-          <Form>
-            <InputGroup>
-              <InputGroup.Text>
-                <FaSearch color="gray" />
-              </InputGroup.Text>
-              <Form.Control
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Buscar checkin"
-              />
-            </InputGroup>
-          </Form>
+          <InputGroup>
+            <InputGroup.Text>
+              <FaSearch color="gray" />
+            </InputGroup.Text>
+            <Form.Control
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Buscar checkin"
+            />
+          </InputGroup>
         </Stack>
       </Stack>
       <Tabela
@@ -91,7 +89,7 @@ const Checkins = () => {
             ),
           },
         ]}
-        rows={rowFiltrada}
+        rows={checkinsFiltrados}
         keyField="id_checkin"
       />
     </>

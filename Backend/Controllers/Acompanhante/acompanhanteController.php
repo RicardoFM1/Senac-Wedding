@@ -21,7 +21,7 @@ class AcompanhanteController
 
 
             $esquema = v::key('nome', v::stringVal()->notEmpty()->length(1, 45))
-                ->ket('sobrenome', v::stringVal()->notEmpty()->length(1, 45))
+                ->key('sobrenome', v::stringVal()->notEmpty()->length(1, 45))
                 ->key('email', v::email())
                 ->key('idade', v::intVal()->notEmpty());
 
@@ -69,6 +69,8 @@ class AcompanhanteController
         try {
             Middleware::validarMiddleware();
             $dados = json_decode(file_get_contents('php://input'), true);
+            $this->validarDados($dados);
+
             http_response_code(201);
             echo json_encode($this->acompanhanteService->criarAcompanhante($dados));
 
@@ -90,6 +92,8 @@ class AcompanhanteController
         try {
             Middleware::validarMiddleware();
             $dados = json_decode(file_get_contents('php://input'), true);
+            $this->validarDados($dados);
+
             $email = $_GET['email_acompanhante'];
             http_response_code(200);
             echo json_encode($this->acompanhanteService->atualizarAcompanhante($dados, $email));

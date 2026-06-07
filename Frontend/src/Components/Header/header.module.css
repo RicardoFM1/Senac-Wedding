@@ -31,12 +31,12 @@
 
 .botaoCheckin {
   background-color: rgb(126, 79, 52) !important;
-  border: none;
+  border: none !important;
 }
 
 .botaoSair {
   border: 1px solid rgb(126, 79, 52) !important;
-  background-color: transparent;
+  background-color: transparent !important;
   color: black !important;
 }
 

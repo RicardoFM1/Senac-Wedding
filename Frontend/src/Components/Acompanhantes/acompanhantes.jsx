@@ -4,41 +4,33 @@ import { FaSearch } from "react-icons/fa";
 import style from "./acompanhantes.module.css";
 import { IoIosArrowForward } from "react-icons/io";
 import Tabela from "../Tabela/tabela";
-
-const acompanhantes = [
-  {
-    id: 1,
-    nome: "Ana",
-    sobrenome: "Silva",
-    email: "ana.silva@example.com",
-    idade: 27,
-    convidado: "Bruna Santos (CPF 123.456.789-00)",
-  },
-  {
-    id: 2,
-    nome: "Carlos",
-    sobrenome: "Pereira",
-    email: "carlos.pereira@example.com",
-    idade: 34,
-    convidado: "Marcos Costa (CPF 987.654.321-11)",
-  },
-  {
-    id: 3,
-    nome: "Juliana",
-    sobrenome: "Oliveira",
-    email: "juliana.oliveira@example.com",
-    idade: 22,
-    convidado: "Paula Rocha (CPF 456.789.123-22)",
-  },
-];
+import Api from "../../Service/api";
 
 const Acompanhantes = () => {
   const [search, setSearch] = useState("");
-  const [rowFiltrada, setRowFiltrada] = useState(acompanhantes);
+  const [acompanhantes, setAcompanhantes] = useState([]);
+  const [acompanhantesFiltrados, setAcompanhantesFiltrados] = useState();
+
+  const buscarAcompanhantes = async () => {
+    try {
+      const res = await Api.get("/acompanhante");
+
+      if (res.status === 200) {
+        setAcompanhantes(res.data.dados);
+        setAcompanhantesFiltrados(res.data.dados);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    buscarAcompanhantes();
+  }, []);
 
   useEffect(() => {
     const termo = search?.toLowerCase() || "";
-    setRowFiltrada(
+    setAcompanhantesFiltrados(
       acompanhantes.filter((item) =>
         `${item.nome} ${item.sobrenome} ${item.email} ${item.idade} ${item.convidado}`
           .toLowerCase()
@@ -72,7 +64,10 @@ const Acompanhantes = () => {
         <Stack className="fw-bold mx-5 my-5">
           <h1>Lista de acompanhantes</h1>
           <p className="text-muted">
-            {acompanhantes.length} acompanhantes no total
+            {acompanhantesFiltrados?.length} Acompanhante(s) no total
+          </p>
+          <p className="text-muted">
+            Clique na linha da tabela para acessar mais informações
           </p>
         </Stack>
         <Stack
@@ -80,21 +75,23 @@ const Acompanhantes = () => {
           direction="horizontal"
           gap={3}
         >
-          <Form>
-            <InputGroup>
-              <InputGroup.Text>
-                <FaSearch color="gray" />
-              </InputGroup.Text>
-              <Form.Control
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Buscar um acompanhante"
-              />
-            </InputGroup>
-          </Form>
+          <InputGroup>
+            <InputGroup.Text>
+              <FaSearch color="gray" />
+            </InputGroup.Text>
+            <Form.Control
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Buscar um acompanhante"
+            />
+          </InputGroup>
         </Stack>
       </Stack>
-      <Tabela columns={columns} rows={rowFiltrada} keyField="id_acompanhante" />
+      <Tabela
+        columns={columns}
+        rows={acompanhantesFiltrados}
+        keyField="id_acompanhante"
+      />
     </>
   );
 };
