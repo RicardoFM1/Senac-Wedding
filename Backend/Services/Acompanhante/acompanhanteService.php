@@ -64,13 +64,14 @@ class AcompanhanteService
         try {
 
 
-            $criar = $this->db->prepare('INSERT INTO acompanhante (nome, sobrenome, email, idade, convidado_idconvidado)
-        VALUES (:nome, :sobrenome, :email, :idade, :convidado_idconvidado)');
+            $criar = $this->db->prepare('INSERT INTO acompanhante (nome, sobrenome, email, cpf, idade, convidado_idconvidado)
+        VALUES (:nome, :sobrenome, :email, :cpf, :idade, :convidado_idconvidado)');
 
             $criar->execute([
                 ':nome' => $acompanhanteDados['nome'],
                 ':sobrenome' => $acompanhanteDados['sobrenome'],
                 ':email' => $acompanhanteDados['email'],
+                ':cpf' => isset($acompanhanteDados['cpf']) ? $acompanhanteDados['cpf'] : null,
                 ':idade' => $acompanhanteDados['idade'],
                 ':convidado_idconvidado' => $acompanhanteDados['convidado_idconvidado']
 
@@ -110,13 +111,14 @@ class AcompanhanteService
 
 
             $atualizar = $this->db->prepare('UPDATE acompanhante SET nome = :nome, sobrenome = :sobrenome, 
-            email = :email, idade = :idade, convidado_idconvidado = :convidado_idconvidado
+            email = :email, cpf = :cpf, idade = :idade, convidado_idconvidado = :convidado_idconvidado
             WHERE email = :email_antigo');
 
             $atualizar->execute([
                 ':nome' => $acompanhanteDados['nome'],
                 ':sobrenome' => $acompanhanteDados['sobrenome'],
                 ':email' => $acompanhanteDados['email'],
+                ':cpf' => isset($acompanhanteDados['cpf']) ? $acompanhanteDados['cpf'] : null,
                 ':idade' => $acompanhanteDados['idade'],
                 ':convidado_idconvidado' => $acompanhanteDados['convidado_idconvidado'],
                 ':email_antigo' => $emailAcompanhante

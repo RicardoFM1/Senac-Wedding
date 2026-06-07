@@ -23,6 +23,7 @@ class AcompanhanteController
             $esquema = v::key('nome', v::stringVal()->notEmpty()->length(1, 45))
                 ->key('sobrenome', v::stringVal()->notEmpty()->length(1, 45))
                 ->key('email', v::email())
+                ->key('cpf', v::cpf())
                 ->key('idade', v::intVal()->notEmpty());
 
 
@@ -33,6 +34,7 @@ class AcompanhanteController
                 'nome' => 'Nome inválido, min 1, max 45',
                 'sobrenome' => 'Sobrenome inválido, min 1, max 45',
                 'email' => 'Email inválido',
+                'cpf' => 'Cpf inválido',
                 'idade' => 'Idade inválida'
             ];
 

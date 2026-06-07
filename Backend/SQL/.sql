@@ -98,6 +98,7 @@ CREATE TABLE IF NOT EXISTS `db_casamento`.`acompanhante` (
   `nome` VARCHAR(45) NOT NULL,
   `sobrenome` VARCHAR(45) NOT NULL,
   `email` VARCHAR(45) NOT NULL,
+  `cpf` VARCHAR(11) NULL,
   `idade` INT NOT NULL,
   `convidado_idconvidado` INT NOT NULL,
   PRIMARY KEY (`id_acompanhante`),
@@ -148,8 +149,8 @@ INSERT INTO checkin (usuario_idusuario, convidado_idconvidado, data_e_hora)
 VALUES(1, 1, "2026-10-02");
 
 
-INSERT INTO acompanhante (nome, sobrenome,  email, idade, convidado_idconvidado)
-VALUES ("fernando", "fernandes", "fernando@gmail.com", 18, 5);
+INSERT INTO acompanhante (nome, sobrenome, email, cpf, idade, convidado_idconvidado)
+VALUES ("fernando", "fernandes", "fernando@gmail.com", NULL, 18, 5);
 
 
 

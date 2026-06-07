@@ -1,23 +1,37 @@
 import { useEffect, useState } from "react";
 import { Button, Form, InputGroup, Stack } from "react-bootstrap";
 import { FaSearch } from "react-icons/fa";
-import style from "./acompanhantes.module.css";
 import { IoIosArrowForward } from "react-icons/io";
+import { toast } from "react-toastify";
+import style from "./acompanhantes.module.css";
 import Tabela from "../Tabela/tabela";
 import Api from "../../Service/api";
+import AcompanhanteModal from "../Modais/Acompanhante/acompanhanteModal";
 
 const Acompanhantes = () => {
   const [search, setSearch] = useState("");
   const [acompanhantes, setAcompanhantes] = useState([]);
-  const [acompanhantesFiltrados, setAcompanhantesFiltrados] = useState();
+  const [acompanhantesFiltrados, setAcompanhantesFiltrados] = useState([]);
+  const [convidados, setConvidados] = useState([]);
+  const [show, setShow] = useState(false);
+  const [acompanhanteSelecionado, setAcompanhanteSelecionado] = useState(null);
+
+  const buscarConvidados = async () => {
+    try {
+      const res = await Api.get("/convidado");
+      if (res.status === 200) {
+        setConvidados(res.data.dados || []);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const buscarAcompanhantes = async () => {
     try {
       const res = await Api.get("/acompanhante");
-
       if (res.status === 200) {
-        setAcompanhantes(res.data.dados);
-        setAcompanhantesFiltrados(res.data.dados);
+        setAcompanhantes(res.data.dados || []);
       }
     } catch (err) {
       console.log(err);
@@ -25,23 +39,83 @@ const Acompanhantes = () => {
   };
 
   useEffect(() => {
+    buscarConvidados();
     buscarAcompanhantes();
   }, []);
 
   useEffect(() => {
     const termo = search?.toLowerCase() || "";
+    const lista = acompanhantes.map((item) => {
+      const convidado = convidados.find(
+        (convidadoItem) =>
+          Number(convidadoItem.id_convidado) ===
+          Number(item.convidado_idconvidado),
+      );
+      return {
+        ...item,
+        convidado: convidado
+          ? `${convidado.nome} ${convidado.sobrenome} - ${convidado.cpf}`
+          : item.convidado_idconvidado,
+      };
+    });
+
     setAcompanhantesFiltrados(
-      acompanhantes.filter((item) =>
-        `${item.nome} ${item.sobrenome} ${item.email} ${item.idade} ${item.convidado}`
+      lista.filter((item) =>
+        `${item.nome} ${item.sobrenome} ${item.email} ${item.cpf || ""} ${item.idade} ${item.convidado}`
           .toLowerCase()
           .includes(termo),
       ),
     );
-  }, [search]);
+  }, [search, acompanhantes, convidados]);
+
+  const handleNovo = () => {
+    setShow(true);
+    setAcompanhanteSelecionado(null);
+  };
+
+  const handleSelected = (row) => {
+    setAcompanhanteSelecionado(row);
+    setShow(true);
+  };
+
+  const handleClose = () => {
+    setShow(false);
+    setAcompanhanteSelecionado(null);
+  };
+
+  const enviarDados = async (dados) => {
+    try {
+      let res;
+      if (acompanhanteSelecionado) {
+        res = await Api.put(
+          `/acompanhante?email_acompanhante=${acompanhanteSelecionado.email}`,
+          dados,
+        );
+      } else {
+        res = await Api.post("/acompanhante", dados);
+      }
+
+      if (res.status === 200 || res.status === 201) {
+        toast.success(res.data.mensagem || "Acompanhante salvo com sucesso");
+        handleClose();
+        buscarAcompanhantes();
+      }
+    } catch (err) {
+      const erros = err.response?.data?.erros;
+      if (erros) {
+        Object.values(erros).forEach((msg) => toast.error(msg));
+      } else {
+        toast.error(
+          err.response?.data?.mensagem || "Erro ao salvar acompanhante",
+        );
+      }
+    }
+  };
 
   const columns = [
     { header: "Nome", accessor: "nome" },
     { header: "Sobrenome", accessor: "sobrenome" },
+    { header: "CPF", accessor: "cpf" },
     { header: "Email", accessor: "email" },
     { header: "Idade", accessor: "idade" },
     { header: "Convidado", accessor: "convidado" },
@@ -60,14 +134,14 @@ const Acompanhantes = () => {
 
   return (
     <>
-      <Stack direction="horizontal">
+      <Stack className="d-flex flex-column flex-xl-row">
         <Stack className="fw-bold mx-5 my-5">
           <h1>Lista de acompanhantes</h1>
           <p className="text-muted">
-            {acompanhantesFiltrados?.length} Acompanhante(s) no total
+            {acompanhantesFiltrados?.length} acompanhante(s) no total
           </p>
           <p className="text-muted">
-            Clique na linha da tabela para acessar mais informações
+            Clique na linha da tabela para editar ou ver detalhes
           </p>
         </Stack>
         <Stack
@@ -87,10 +161,22 @@ const Acompanhantes = () => {
           </InputGroup>
         </Stack>
       </Stack>
+      <Button onClick={handleNovo} className={style.botaoAdicionar}>
+        Adicionar registro
+      </Button>
+
       <Tabela
         columns={columns}
         rows={acompanhantesFiltrados}
         keyField="id_acompanhante"
+        handleSelected={handleSelected}
+      />
+      <AcompanhanteModal
+        show={show}
+        dados={acompanhanteSelecionado}
+        handleClose={handleClose}
+        submit={enviarDados}
+        convidados={convidados}
       />
     </>
   );
