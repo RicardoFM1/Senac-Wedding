@@ -1,7 +1,34 @@
+import { useEffect, useState } from "react";
+import Api from "../../Service/api";
 import styles from "./dashboard.module.css";
+import { useNavigate } from "react-router";
 
 const Dashboard = () => {
+   const [retrieve, setRetrieve] = useState([]);
+    const [isAdmin, setIsAdmin] = useState(false);
   
+    const buscarRetrieve = async () => {
+      try {
+        const res = await Api.get("/retrieve");
+  
+        if (res.status === 200) {
+          setRetrieve(res.data.dados);
+          console.log(res.data.dados);
+          setIsAdmin(res.data.dados.cargo_usuario === "administrador");
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+  
+      const navigate = useNavigate()
+    useEffect(() => {
+      buscarRetrieve();
+      if(!isAdmin){
+        navigate('/')
+      }
+    }, []);
+
   const stats = {
     totalConvidados: 12,
     acompanhantes: 10,

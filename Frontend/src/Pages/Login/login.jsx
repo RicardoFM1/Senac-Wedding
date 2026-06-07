@@ -7,7 +7,7 @@ import { RiLockPasswordFill } from "react-icons/ri";
 import { FaEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Api from "../../Service/api";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router";
@@ -31,6 +31,7 @@ const navigate = useNavigate();
 
         if(res.status === 200){
             toast.success('Login realizado com sucesso')
+            localStorage.clear();
             localStorage.setItem('token', res.data.token)
             navigate('/')
         }
@@ -46,6 +47,14 @@ const navigate = useNavigate();
         }
     }
   };
+
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+
+    if(token){
+      navigate('/')
+    }
+  }, [])
 
   return (
     <div className={style.loginContainer}>
