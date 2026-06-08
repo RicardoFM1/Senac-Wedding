@@ -94,7 +94,7 @@ const Convidados = () => {
 
         if (res.status === 200) {
           toast.success(res.data.mensagem || "Sucesso ao atualizar convidado");
-          handleFechar()
+          handleFechar();
           return;
         }
       } else {
@@ -102,9 +102,8 @@ const Convidados = () => {
 
         if (res.status === 201) {
           toast.success(res.data.mensagem || "Sucesso ao registrar convidado");
-          handleFechar()
+          handleFechar();
           return;
-
         }
       }
     } catch (err) {
@@ -117,6 +116,24 @@ const Convidados = () => {
       } else {
         toast.error(err.response?.data?.mensagem || "Erro ao enviar dados");
       }
+    }
+  };
+
+  const deletarConvidado = async () => {
+    if (!convidadoSelecionado) return;
+
+    try {
+      const res = await Api.delete("/convidado", {
+        params: { email_convidado: convidadoSelecionado.email },
+      });
+
+      if (res.status === 200) {
+        toast.success(res.data.mensagem || "Convidado deletado com sucesso");
+        handleFechar();
+        buscarConvidados();
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.mensagem || "Erro ao deletar convidado");
     }
   };
 
@@ -169,6 +186,7 @@ const Convidados = () => {
         show={show}
         handleClose={handleFechar}
         submit={enviarDados}
+        onDelete={deletarConvidado}
       />
     </>
   );

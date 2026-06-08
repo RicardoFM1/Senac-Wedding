@@ -73,6 +73,30 @@ useEffect(() => {
     setMesaSelecionada(null)
   }
 
+  const handleFechar = () => {
+    setShow(false);
+    setMesaSelecionada(null);
+    buscarMesas();
+  };
+
+  const deletarMesa = async () => {
+    if (!mesaSelecionada) return;
+
+    try {
+      const res = await Api.delete("/mesa", {
+        params: { id_mesa: mesaSelecionada.id_mesa },
+      });
+
+      if (res.status === 200) {
+        setShow(false);
+        setMesaSelecionada(null);
+        buscarMesas();
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <>
       <Stack className="d-flex flex-column flex-xl-row">
@@ -102,7 +126,12 @@ useEffect(() => {
       </Stack>
       <Button className={style.botaoRegistro} onClick={handleNovo}>Adicionar registro</Button>
       <Tabela columns={columns} rows={mesaFiltrada} keyField="id_mesa" handleSelected={handleSelected}/>
-      <MesaModal show={show} dados={mesaSelecionada} handleClose={() => setShow(!show)}/>
+      <MesaModal
+        show={show}
+        dados={mesaSelecionada}
+        handleClose={handleFechar}
+        onDelete={deletarMesa}
+      />
     </>
   );
 };

@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Button, Form, Modal, Stack } from "react-bootstrap";
+import ConfirmacaoDeleteModal from "../ConfirmacaoDelete/confirmacaoDeleteModal";
 
-const ConvidadoModal = ({ dados, show, handleClose, submit }) => {
+const ConvidadoModal = ({ dados, show, handleClose, submit, onDelete }) => {
   const [formData, setFormData] = useState({
     nome: "",
     sobrenome: "",
@@ -12,6 +13,7 @@ const ConvidadoModal = ({ dados, show, handleClose, submit }) => {
     confirmacao: "",
     mesa_idmesa: null,
   });
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -42,6 +44,12 @@ const ConvidadoModal = ({ dados, show, handleClose, submit }) => {
     }
   }, [dados, show]);
 
+  useEffect(() => {
+    if (!show) {
+      setShowDeleteConfirm(false);
+    }
+  }, [show]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -50,7 +58,7 @@ const ConvidadoModal = ({ dados, show, handleClose, submit }) => {
   };
 
   return (
-    <Modal show={show} onHide={handleClose}>
+    <Modal show={show} onHide={handleClose} backdrop="static" keyboard={false}>
       <Form onSubmit={handleSubmit}>
         <Modal.Header closeButton>
           <Modal.Title>
@@ -152,7 +160,7 @@ const ConvidadoModal = ({ dados, show, handleClose, submit }) => {
         <Modal.Footer>
           <Stack direction="horizontal" gap={3}>
             {dados ? (
-              <Button type="button" variant="danger">
+              <Button type="button" variant="danger" onClick={() => setShowDeleteConfirm(true)}>
                 Excluir
               </Button>
             ) : (
@@ -167,6 +175,16 @@ const ConvidadoModal = ({ dados, show, handleClose, submit }) => {
           </Stack>
         </Modal.Footer>
       </Form>
+      <ConfirmacaoDeleteModal
+        show={showDeleteConfirm}
+        handleClose={() => setShowDeleteConfirm(false)}
+        onConfirm={() => {
+          setShowDeleteConfirm(false);
+          onDelete?.();
+        }}
+        itemType="convidado"
+        itemName={`${formData.nome} ${formData.sobrenome}`}
+      />
     </Modal>
   );
 };

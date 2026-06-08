@@ -29,7 +29,7 @@ const CheckinModal = ({ show, handleClose, submit, convidados }) => {
   };
 
   return (
-    <Modal show={show} onHide={handleClose}>
+    <Modal show={show} onHide={handleClose} backdrop="static" keyboard={false}>
       <Form onSubmit={handleSubmit}>
         <Modal.Header closeButton>
           <Modal.Title>Criar checkin</Modal.Title>

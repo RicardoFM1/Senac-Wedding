@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Button, Form, Modal, Stack } from "react-bootstrap";
+import ConfirmacaoDeleteModal from "../ConfirmacaoDelete/confirmacaoDeleteModal";
 
-const AcompanhanteModal = ({ dados, show, handleClose, submit, convidados }) => {
+const AcompanhanteModal = ({ dados, show, handleClose, submit, convidados, onDelete }) => {
   const [formData, setFormData] = useState({
     nome: "",
     sobrenome: "",
@@ -11,6 +12,7 @@ const AcompanhanteModal = ({ dados, show, handleClose, submit, convidados }) => 
     convidado_idconvidado: "",
   });
   const [editando, setEditando] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   useEffect(() => {
     if (dados) {
@@ -34,6 +36,12 @@ const AcompanhanteModal = ({ dados, show, handleClose, submit, convidados }) => 
     }
   }, [dados, show]);
 
+  useEffect(() => {
+    if (!show) {
+      setShowDeleteConfirm(false);
+    }
+  }, [show]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (!name) return;
@@ -55,7 +63,7 @@ const AcompanhanteModal = ({ dados, show, handleClose, submit, convidados }) => 
   );
 
   return (
-    <Modal show={show} onHide={handleClose}>
+    <Modal show={show} onHide={handleClose} backdrop="static" keyboard={false}>
       <Form onSubmit={handleSubmit}>
         <Modal.Header closeButton>
           <Modal.Title>
@@ -143,7 +151,7 @@ const AcompanhanteModal = ({ dados, show, handleClose, submit, convidados }) => 
         </Modal.Body>
         <Modal.Footer>
           {dados ? (
-              <Button type="button" variant="danger">
+              <Button type="button" variant="danger" onClick={() => setShowDeleteConfirm(true)}>
                 Excluir
               </Button>
             ) : (
@@ -158,6 +166,16 @@ const AcompanhanteModal = ({ dados, show, handleClose, submit, convidados }) => 
           </Button>
         </Modal.Footer>
       </Form>
+      <ConfirmacaoDeleteModal
+        show={showDeleteConfirm}
+        handleClose={() => setShowDeleteConfirm(false)}
+        onConfirm={() => {
+          setShowDeleteConfirm(false);
+          onDelete?.();
+        }}
+        itemType="acompanhante"
+        itemName={`${formData.nome} ${formData.sobrenome}`}
+      />
     </Modal>
   );
 };

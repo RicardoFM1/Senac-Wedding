@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { Button, Form, Modal, Stack } from "react-bootstrap";
+import ConfirmacaoDeleteModal from "../ConfirmacaoDelete/confirmacaoDeleteModal";
 
-const MesaModal = ({ dados, show, handleClose, submit }) => {
+const MesaModal = ({ dados, show, handleClose, submit, onDelete }) => {
   const [formData, setFormData] = useState({
     capacidade: "",
     restricao: "",
   });
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -26,8 +28,14 @@ const MesaModal = ({ dados, show, handleClose, submit }) => {
     }
   }, [dados, show]);
 
+  useEffect(() => {
+    if (!show) {
+      setShowDeleteConfirm(false);
+    }
+  }, [show]);
+
   return (
-    <Modal show={show} onHide={handleClose}>
+    <Modal show={show} onHide={handleClose} backdrop="static" keyboard={false}>
       <Modal.Header closeButton>
         <Modal.Title>
           {editando ? "Gerenciar mesa" : "Registrar nova mesa"}
@@ -61,7 +69,11 @@ const MesaModal = ({ dados, show, handleClose, submit }) => {
       </Modal.Body>
       <Modal.Footer>
         <Stack direction="horizontal" gap={3}>
-          {dados ? <Button variant="danger">Excluir</Button> : ""}
+          {dados ? (
+            <Button type="button" variant="danger" onClick={() => setShowDeleteConfirm(true)}>
+              Excluir
+            </Button>
+          ) : ""}
            <Button variant="secondary" type="button" onClick={handleClose}>
             Cancelar
           </Button>
@@ -71,6 +83,16 @@ const MesaModal = ({ dados, show, handleClose, submit }) => {
           </Button>
         </Stack>
       </Modal.Footer>
+      <ConfirmacaoDeleteModal
+        show={showDeleteConfirm}
+        handleClose={() => setShowDeleteConfirm(false)}
+        onConfirm={() => {
+          setShowDeleteConfirm(false);
+          onDelete?.();
+        }}
+        itemType="mesa"
+        itemName={`Mesa ${dados?.id_mesa}`}
+      />
     </Modal>
   );
 };

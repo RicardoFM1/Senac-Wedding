@@ -103,6 +103,26 @@ const Acompanhantes = () => {
     }
   };
 
+  const deletarAcompanhante = async () => {
+    if (!acompanhanteSelecionado) return;
+
+    try {
+      const res = await Api.delete("/acompanhante", {
+        params: { email_acompanhante: acompanhanteSelecionado.email },
+      });
+
+      if (res.status === 200) {
+        toast.success(res.data.mensagem || "Acompanhante deletado com sucesso");
+        handleClose();
+        buscarAcompanhantes();
+      }
+    } catch (err) {
+      toast.error(
+        err.response?.data?.mensagem || "Erro ao deletar acompanhante",
+      );
+    }
+  };
+
   const columns = [
     { header: "Nome", accessor: "nome" },
     { header: "Sobrenome", accessor: "sobrenome" },
@@ -172,6 +192,7 @@ const Acompanhantes = () => {
         handleClose={handleClose}
         submit={enviarDados}
         convidados={convidados}
+        onDelete={deletarAcompanhante}
       />
     </>
   );
