@@ -21,6 +21,7 @@ const Checkins = () => {
       const res = await Api.get("/checkin");
       if (res.status === 200) {
         setCheckins(res.data.dados || []);
+        setCheckinsFiltrados(res.data.dados);
       }
     } catch (err) {
       console.log(err);
@@ -38,37 +39,28 @@ const Checkins = () => {
     }
   };
 
-  const buscarAcompanhantes = async () => {
-    try {
-      const res = await Api.get("/acompanhante");
-      if (res.status === 200) {
-        setAcompanhantes(res.data.dados || []);
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
+
+  
+
+  useEffect(() => {
+    buscarCheckins();
+    buscarConvidados();
+  }, []);
 
   const handleFiltragem = () => {
     const termo = search?.toLowerCase() || "";
     setCheckinsFiltrados(
-      checkins.filter((item) =>
-        `${item.numero} ${item.usuario} ${item.convidado} ${item.dataHora}`
+      checkins?.filter((item) =>
+        `${item.numero}`
           .toLowerCase()
-          .includes(termo),
+          .includes(termo)
       ),
     );
   };
 
   useEffect(() => {
-    buscarCheckins();
-    buscarConvidados();
-    buscarAcompanhantes();
-  }, []);
-
-  useEffect(() => {
     handleFiltragem();
-  }, [search, checkins]);
+  }, [search]);
 
   const handleNovo = () => {
     setShow(true);
@@ -121,21 +113,19 @@ const Checkins = () => {
 
       <Tabela
         columns={[
-          { header: "nº", accessor: "numero" },
-          { header: "Usuário", accessor: "usuario" },
-          { header: "Convidado", accessor: "convidado" },
-          { header: "Data e hora", accessor: "dataHora" },
+          { header: "nº", accessor: "id_checkin" },
           {
-            header: "",
-            accessor: "",
-            render: (row) => (
-              <Stack direction="horizontal">
-                <p>
-                  <IoIosArrowForward />
-                </p>
-              </Stack>
-            ),
+            header: "Usuário",
+            accessor: "usuario",
+            render: (row) => (row.usuario ? `${row.usuario.nome} - ${row.usuario.cpf}` : "")
           },
+          {
+            header: "Convidado",
+            accessor: "convidado",
+            render: (row) => (row.convidado ? `${row.convidado.nome} - ${row.convidado.cpf}` : "")
+          },
+          { header: "Data e hora", accessor: "data_e_hora" },
+          
         ]}
         rows={checkinsFiltrados}
         keyField="id_checkin"

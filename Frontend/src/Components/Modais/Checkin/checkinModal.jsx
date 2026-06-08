@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Button, Form, Modal, Stack } from "react-bootstrap";
 
-const CheckinModal = ({ show, handleClose, submit, convidados, acompanhantes }) => {
+const CheckinModal = ({ show, handleClose, submit, convidados }) => {
   const [formData, setFormData] = useState({
     convidado_idconvidado: "",
   });
@@ -22,9 +22,6 @@ const CheckinModal = ({ show, handleClose, submit, convidados, acompanhantes }) 
     (convidado) => Number(convidado.id_convidado) === Number(formData.convidado_idconvidado),
   );
 
-  const convidadosAcompanhantes = acompanhantes?.filter(
-    (acompanhante) => Number(acompanhante.convidado_idconvidado) === Number(formData.convidado_idconvidado),
-  );
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -60,18 +57,7 @@ const CheckinModal = ({ show, handleClose, submit, convidados, acompanhantes }) 
                 <strong>Convidado selecionado</strong>
                 <p className="mb-0">{selectedConvidado.nome} {selectedConvidado.sobrenome}</p>
                 <p className="mb-0">CPF: {selectedConvidado.cpf}</p>
-                <p className="mb-2">Acompanhantes:</p>
-                {convidadosAcompanhantes?.length > 0 ? (
-                  <ul>
-                    {convidadosAcompanhantes.map((acompanhante) => (
-                      <li key={acompanhante.id_acompanhante}>
-                        {acompanhante.nome} {acompanhante.sobrenome}
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="mb-0 text-muted">Nenhum acompanhante cadastrado para este convidado.</p>
-                )}
+                
               </div>
             ) : null}
           </Stack>

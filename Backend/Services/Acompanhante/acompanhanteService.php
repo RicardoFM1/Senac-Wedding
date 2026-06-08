@@ -38,7 +38,9 @@ class AcompanhanteService
 
         return [
             'sucesso' => true,
-            'dados' => $acompanhante
+            'dados' => [
+                'acompanhante' => $acompanhante
+            ]
         ];
     }
 
@@ -46,16 +48,33 @@ class AcompanhanteService
 
     public function listarAcompanhantes()
     {
-        $query = $this->db->query("SELECT * FROM acompanhante");
+        $query = $this->db->query("SELECT a.id_acompanhante, a.nome AS nome_acompanhante,
+        a.sobrenome AS sobrenome_acompanhante, a.cpf AS cpf_acompanhante, a.email as email_acompanhante, a.idade,
+        co.nome as nome_convidado, co.cpf as cpf_convidado
+        FROM acompanhante a INNER JOIN convidado co ON a.convidado_idconvidado = co.id_convidado");
 
         $query->execute();
+        $resultado = [];
 
-        $acompanhante = $query->fetchAll();
+        while ($row = $query->fetch()) {
+            $resultado[] = [
+                'id_acompanhante' => $row['id_acompanhante'],
+                'nome' => $row['nome_acompanhante'],
+                'sobrenome' => $row['sobrenome_acompanhante'],
+                'cpf' => $row['cpf_acompanhante'],
+                'email' => $row['email_acompanhante'],
+                'idade' => $row['idade'],
+                'convidado' => [
+                    'nome' => $row['nome_convidado'],
+                    'cpf' => $row['cpf_convidado']
+                ]
+            ];
+        }
 
         return [
             'sucesso' => true,
-            'dados' => $acompanhante,
-            'total' => count($acompanhante)
+            'dados' => $resultado
+            
         ];
     }
 
@@ -77,8 +96,31 @@ class AcompanhanteService
 
             ]);
 
+            $idInserido = $this->db->lastInsertId();
+
+            $buscar = $this->db->prepare("SELECT a.id_acompanhante, a.nome, a.sobrenome, a.cpf, a.email, a.idade, co.nome as nome_convidado, co.cpf as cpf_convidado
+                FROM acompanhante a INNER JOIN convidado co ON a.convidado_idconvidado = co.id_convidado WHERE a.id_acompanhante = :id");
+            $buscar->execute([':id' => $idInserido]);
+            $novo = $buscar->fetch();
+
+            $obj = [
+                'id_acompanhante' => $novo['id_acompanhante'],
+                'nome' => $novo['nome'],
+                'sobrenome' => $novo['sobrenome'],
+                'cpf' => $novo['cpf'],
+                'email' => $novo['email'],
+                'idade' => $novo['idade'],
+                'convidado' => [
+                    'nome' => $novo['nome_convidado'],
+                    'cpf' => $novo['cpf_convidado']
+                ]
+            ];
+
             return [
                 'sucesso' => true,
+                'dados' => [
+                    'acompanhante' => $obj
+                ],
                 'mensagem' => 'Acompanhante criado com sucesso'
             ];
         } catch (PDOException $e) {
@@ -124,8 +166,30 @@ class AcompanhanteService
                 ':email_antigo' => $emailAcompanhante
             ]);
 
+            // Buscar o acompanhante atualizado com dados do convidado
+            $buscar = $this->db->prepare("SELECT a.id_acompanhante, a.nome, a.sobrenome, a.cpf, a.email, a.idade, co.nome as nome_convidado, co.cpf as cpf_convidado
+                FROM acompanhante a INNER JOIN convidado co ON a.convidado_idconvidado = co.id_convidado WHERE a.email = :email");
+            $buscar->execute([':email' => $acompanhanteDados['email']]);
+            $atualizado = $buscar->fetch();
+
+            $obj = [
+                'id_acompanhante' => $atualizado['id_acompanhante'],
+                'nome' => $atualizado['nome'],
+                'sobrenome' => $atualizado['sobrenome'],
+                'cpf' => $atualizado['cpf'],
+                'email' => $atualizado['email'],
+                'idade' => $atualizado['idade'],
+                'convidado' => [
+                    'nome' => $atualizado['nome_convidado'],
+                    'cpf' => $atualizado['cpf_convidado']
+                ]
+            ];
+
             return [
                 'sucesso' => true,
+                'dados' => [
+                    'acompanhante' => $obj
+                ],
                 'mensagem' => 'Acompanhante atualizado com sucesso'
             ];
         } catch (PDOException $e) {

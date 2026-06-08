@@ -21,6 +21,7 @@ const Acompanhantes = () => {
       const res = await Api.get("/convidado");
       if (res.status === 200) {
         setConvidados(res.data.dados || []);
+        
       }
     } catch (err) {
       console.log(err);
@@ -31,7 +32,9 @@ const Acompanhantes = () => {
     try {
       const res = await Api.get("/acompanhante");
       if (res.status === 200) {
-        setAcompanhantes(res.data.dados || []);
+        setAcompanhantes(res.data.dados);
+        console.log(res.data.dados)
+        setAcompanhantesFiltrados(res.data.dados);
       }
     } catch (err) {
       console.log(err);
@@ -45,28 +48,16 @@ const Acompanhantes = () => {
 
   useEffect(() => {
     const termo = search?.toLowerCase() || "";
-    const lista = acompanhantes.map((item) => {
-      const convidado = convidados.find(
-        (convidadoItem) =>
-          Number(convidadoItem.id_convidado) ===
-          Number(item.convidado_idconvidado),
-      );
-      return {
-        ...item,
-        convidado: convidado
-          ? `${convidado.nome} ${convidado.sobrenome} - ${convidado.cpf}`
-          : item.convidado_idconvidado,
-      };
-    });
-
-    setAcompanhantesFiltrados(
-      lista.filter((item) =>
-        `${item.nome} ${item.sobrenome} ${item.email} ${item.cpf || ""} ${item.idade} ${item.convidado}`
-          .toLowerCase()
-          .includes(termo),
-      ),
-    );
-  }, [search, acompanhantes, convidados]);
+    
+  
+    // setAcompanhantesFiltrados(
+    //   acompanhantes?.filter((item) =>
+    //     `${item.nome} ${item.sobrenome} ${item.idade}`
+    //       .toLowerCase()
+    //       .includes(termo),
+    //   ),
+    // );
+  }, [search]);
 
   const handleNovo = () => {
     setShow(true);
@@ -118,7 +109,11 @@ const Acompanhantes = () => {
     { header: "CPF", accessor: "cpf" },
     { header: "Email", accessor: "email" },
     { header: "Idade", accessor: "idade" },
-    { header: "Convidado", accessor: "convidado" },
+    {
+      header: "Convidado",
+      accessor: "convidado",
+      render: (row) => (row.convidado ? `${row.convidado.nome} - ${row.convidado.cpf}` : "")
+    },
     {
       header: "",
       accessor: "",

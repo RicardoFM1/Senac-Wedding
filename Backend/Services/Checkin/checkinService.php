@@ -47,16 +47,32 @@ class CheckinService
 
     public function listarCheckins()
     {
-        $query = $this->db->query("SELECT * FROM checkin");
+        $query = $this->db->query("SELECT c.id_checkin, c.data_e_hora,
+        co.nome as nome_convidado, co.cpf as cpf_convidado, u.nome as nome_usuario, u.cpf as cpf_usuario
+        FROM checkin c INNER JOIN convidado co ON c.convidado_idconvidado = co.id_convidado INNER JOIN usuario u ON c.usuario_idusuario = u.id_usuario");
 
         $query->execute();
+        $resultado = [];
 
-        $checkins = $query->fetchAll();
+        while ($row = $query->fetch()) {
+            $resultado[] = [
+                'id_checkin' => $row['id_checkin'],
+                'data_e_hora' => $row['data_e_hora'],
+                'convidado' => [
+                    'nome' => $row['nome_convidado'],
+                    'cpf' => $row['cpf_convidado']
+                ],
+                'usuario' => [
+                    'nome' => $row['nome_usuario'],
+                    'cpf' => $row['cpf_usuario']
+                ]
+            ];
+        }
 
         return [
             'sucesso' => true,
-            'dados' => $checkins,
-            'total' => count($checkins)
+            'dados' => $resultado
+            
         ];
     }
 
@@ -75,7 +91,7 @@ class CheckinService
                 throw new Exception('Convidado não encontrado', 404);
             }
 
-            if($convidado['confirmacao'] === 'confirmado'){
+            if ($convidado['confirmacao'] === 'confirmado') {
                 throw new Exception('Convidado já confirmado', 409);
             }
 
@@ -90,14 +106,43 @@ class CheckinService
                 ':data_e_hora' => $dataFormatada
             ]);
 
+            $idInserido = $this->db->lastInsertId();
+
             $atualizarConvidado = $this->db->prepare('UPDATE convidado SET confirmacao = "confirmado" WHERE id_convidado = :id_convidado');
 
             $atualizarConvidado->execute([
                 ':id_convidado' => $checkinDados['convidado_idconvidado']
             ]);
 
+            // Buscar checkin criado com dados do convidado e usuario
+            $buscar = $this->db->prepare("SELECT c.id_checkin, c.data_e_hora, co.nome as nome_convidado, co.cpf as cpf_convidado, u.nome as nome_usuario, u.cpf as cpf_usuario
+                FROM checkin c INNER JOIN convidado co ON c.convidado_idconvidado = co.id_convidado INNER JOIN usuario u ON c.usuario_idusuario = u.id_usuario
+                WHERE c.id_checkin = :id_checkin");
+
+            $buscar->execute([
+                ':id_checkin' => $idInserido
+            ]);
+
+            $row = $buscar->fetch();
+
+            $checkinObj = [
+                'id_checkin' => $row['id_checkin'],
+                'data_e_hora' => $row['data_e_hora'],
+                'convidado' => [
+                    'nome' => $row['nome_convidado'],
+                    'cpf' => $row['cpf_convidado']
+                ],
+                'usuario' => [
+                    'nome' => $row['nome_usuario'],
+                    'cpf' => $row['cpf_usuario']
+                ]
+            ];
+
             return [
                 'sucesso' => true,
+                'dados' => [
+                    'checkin' => $checkinObj,
+                ],
                 'mensagem' => 'Checkin criado com sucesso'
             ];
         } catch (PDOException $e) {
