@@ -37,6 +37,9 @@ class CheckinService
             ];
         }
 
+        $dt = new DateTime($checkin['data_e_hora']);
+        $checkin['data_e_hora'] = $dt->format('d/m/Y H:i:s');
+
         return [
             'sucesso' => true,
             'dados' => $checkin
@@ -55,9 +58,12 @@ class CheckinService
         $resultado = [];
 
         while ($row = $query->fetch()) {
+            $dt = new DateTime($row['data_e_hora']);
+            $dataFormatada = $dt->format('d/m/Y H:i:s');
+            
             $resultado[] = [
                 'id_checkin' => $row['id_checkin'],
-                'data_e_hora' => $row['data_e_hora'],
+                'data_e_hora' => $dataFormatada,
                 'convidado' => [
                     'nome' => $row['nome_convidado'],
                     'cpf' => $row['cpf_convidado']
@@ -125,9 +131,12 @@ class CheckinService
 
             $row = $buscar->fetch();
 
+            $dt = new DateTime($row['data_e_hora']);
+            $dataFormatada = $dt->format('d/m/Y H:i:s');
+
             $checkinObj = [
                 'id_checkin' => $row['id_checkin'],
-                'data_e_hora' => $row['data_e_hora'],
+                'data_e_hora' => $dataFormatada,
                 'convidado' => [
                     'nome' => $row['nome_convidado'],
                     'cpf' => $row['cpf_convidado']
@@ -158,7 +167,7 @@ class CheckinService
                 throw new Exception('Convidado referenciado não encontrado', 404);
             }
 
-            throw new Exception('Erro ao criar checkin', 500);
+            throw new Exception('Erro ao criar checkin' . $e->getMessage(), 500);
         }
     }
 }

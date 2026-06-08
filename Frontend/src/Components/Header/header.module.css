@@ -56,10 +56,10 @@
 
 @media (max-width: 1024px){
     .botoesMeio {
-        display: none;
+        display: none !important;
     }
     .botoesFim {
-        display: none;
+        display: none !important;
     }
 }
 

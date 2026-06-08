@@ -82,8 +82,7 @@ const Header = ({ telaAtiva, setTelaAtiva }) => {
             Sair
           </Button>
         </Stack>
-      </Stack>
-      <Dropdown className="px-3 py-0 d-block d-xl-none" drop="start">
+        <Dropdown className="px-3 py-0 d-block d-xl-none" drop="start">
         <Dropdown.Toggle className="bg-transparent text-black border" id="menu">
           <IoMdMenu size={25} />
         </Dropdown.Toggle>
@@ -118,6 +117,8 @@ const Header = ({ telaAtiva, setTelaAtiva }) => {
           </Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown>
+      </Stack>
+      
     </Navbar>
   );
 };
