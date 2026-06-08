@@ -112,7 +112,7 @@ const Checkins = () => {
 
       <Tabela
         columns={[
-          { header: "nº", accessor: "id_checkin" },
+      
           {
             header: "Usuário",
             accessor: "usuario",
@@ -124,7 +124,18 @@ const Checkins = () => {
             render: (row) => (row.convidado ? `${row.convidado.nome} - ${row.convidado.cpf}` : "")
           },
           { header: "Data e hora", accessor: "data_e_hora" },
-          
+          { header: "Confirmação", accessor: "convidado.confirmacao", render: (row) => {
+            if(row.convidado.confirmacao === "confirmado"){
+              return <span className={style.spanConfirmacao}>Confirmado</span>
+            } else if(row.convidado.confirmacao === "pendente"){
+              return <span className={style.spanPendente}>Pendente</span>
+            } else if(row.convidado.confirmacao === "cancelado"){
+              return <span className={style.spanCancelado}>Cancelado</span>
+            } else {
+              return "";
+                }
+              
+              } },
         ]}
         rows={checkinsFiltrados}
         keyField="id_checkin"

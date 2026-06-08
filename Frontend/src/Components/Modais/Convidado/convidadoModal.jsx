@@ -150,7 +150,6 @@ const ConvidadoModal = ({ dados, show, handleClose, submit, onDelete }) => {
                 type="number"
                 value={formData?.mesa_idmesa}
                 name="mesa_idmesa"
-                required={!editando}
                 placeholder="Nº da mesa do convidado"
                 onChange={handleChange}
               />

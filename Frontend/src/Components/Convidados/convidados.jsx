@@ -159,6 +159,7 @@ const Convidados = () => {
               <FaSearch color="gray" />
             </InputGroup.Text>
             <Form.Control
+              
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Buscar um convidado"
             />
