@@ -14,7 +14,7 @@ const Header = ({ telaAtiva, setTelaAtiva }) => {
   };
 
   const [retrieve, setRetrieve] = useState([]);
-  const [isAdmin, setIsAdmin] = useState(false);
+  
 
   const buscarRetrieve = async () => {
     try {
@@ -23,7 +23,7 @@ const Header = ({ telaAtiva, setTelaAtiva }) => {
       if (res.status === 200) {
         setRetrieve(res.data.dados);
         console.log(res.data.dados);
-        setIsAdmin(res.data.dados.cargo_usuario === "administrador");
+        
       }
     } catch (err) {
       console.log(err);
@@ -43,14 +43,14 @@ const Header = ({ telaAtiva, setTelaAtiva }) => {
           </Stack>
         </Navbar.Brand>
         <Stack gap={3} direction="horizontal" className={style.botoesMeio}>
-          {isAdmin && (
+          
             <Button
               onClick={() => setTelaAtiva("dashboard")}
               className={telaAtiva === "dashboard" ? style.botaoAtivo : ""}
             >
               Dashboard
             </Button>
-          )}
+       
           <Button
             onClick={() => setTelaAtiva("convidados")}
             className={telaAtiva === "convidados" ? style.botaoAtivo : ""}
@@ -88,11 +88,11 @@ const Header = ({ telaAtiva, setTelaAtiva }) => {
         </Dropdown.Toggle>
         <Dropdown.Menu className={style.dropdownMenu}>
           <Dropdown.Item>
-            {isAdmin && (
+           
               <Button onClick={() => setTelaAtiva("dashboard")}>
                 Dashboard
               </Button>
-            )}
+           
           </Dropdown.Item>
           <Dropdown.Item>
             <Button onClick={() => setTelaAtiva("convidados")}>
