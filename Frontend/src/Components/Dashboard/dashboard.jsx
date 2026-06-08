@@ -70,9 +70,7 @@ const Dashboard = () => {
             Confirmados
           </div>
           <div className={styles.statValue}>{dashboard.confirmados}</div>
-          <div className={styles.statSubtext}>
-            {percentualConfirmado}% do total
-          </div>
+         
         </div>
 
         <div className={styles.statCard}>
@@ -80,7 +78,7 @@ const Dashboard = () => {
             Pendentes
           </div>
           <div className={styles.statValue}>{dashboard.pendentes}</div>
-          <div className={styles.statSubtext}>aguardando resposta</div>
+          <div className={styles.statSubtext}>Aguardando resposta</div>
         </div>
 
         <div className={styles.statCard}>
@@ -88,9 +86,7 @@ const Dashboard = () => {
             Cancelados
           </div>
           <div className={styles.statValue}>{dashboard.cancelados}</div>
-          <div className={styles.statSubtext}>
-            {percentualCancelado}% do total
-          </div>
+          
         </div>
       </div>
 

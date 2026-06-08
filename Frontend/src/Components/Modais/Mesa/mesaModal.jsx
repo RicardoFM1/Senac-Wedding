@@ -62,7 +62,11 @@ const MesaModal = ({ dados, show, handleClose, submit }) => {
       <Modal.Footer>
         <Stack direction="horizontal" gap={3}>
           {dados ? <Button variant="danger">Excluir</Button> : ""}
+           <Button variant="secondary" type="button" onClick={handleClose}>
+            Cancelar
+          </Button>
           <Button variant="success">
+            
             {editando ? "Salvar alterações" : "Registrar"}
           </Button>
         </Stack>

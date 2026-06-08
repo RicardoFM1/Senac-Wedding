@@ -158,6 +158,9 @@ const ConvidadoModal = ({ dados, show, handleClose, submit }) => {
             ) : (
               ""
             )}
+             <Button variant="secondary" type="button" onClick={handleClose}>
+            Cancelar
+          </Button>
             <Button type="submit" variant="success">
               {editando ? "Salvar alterações" : "Registrar"}
             </Button>

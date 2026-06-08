@@ -142,9 +142,17 @@ const AcompanhanteModal = ({ dados, show, handleClose, submit, convidados }) => 
           </Stack>
         </Modal.Body>
         <Modal.Footer>
+          {dados ? (
+              <Button type="button" variant="danger">
+                Excluir
+              </Button>
+            ) : (
+              ""
+            )}
           <Button variant="secondary" type="button" onClick={handleClose}>
             Cancelar
           </Button>
+          
           <Button type="submit" variant="success">
             {editando ? "Salvar alterações" : "Cadastrar"}
           </Button>
