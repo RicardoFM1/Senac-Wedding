@@ -50,13 +50,13 @@ const Acompanhantes = () => {
     const termo = search?.toLowerCase() || "";
     
   
-    // setAcompanhantesFiltrados(
-    //   acompanhantes?.filter((item) =>
-    //     `${item.nome} ${item.sobrenome} ${item.idade}`
-    //       .toLowerCase()
-    //       .includes(termo),
-    //   ),
-    // );
+    setAcompanhantesFiltrados(
+      acompanhantes?.filter((item) =>
+        `${item.nome} ${item.sobrenome} ${item.idade}`
+          .toLowerCase()
+          .includes(termo),
+      ),
+    );
   }, [search]);
 
   const handleNovo = () => {

@@ -50,8 +50,7 @@ const Checkins = () => {
   const handleFiltragem = () => {
     const termo = search?.toLowerCase() || "";
     setCheckinsFiltrados(
-      checkins?.filter((item) =>
-        `${item.numero}`
+      checkins?.filter((item) => (item.id_checkin + " " + item.convidado.nome + " " + item.usuario.nome)
           .toLowerCase()
           .includes(termo)
       ),
