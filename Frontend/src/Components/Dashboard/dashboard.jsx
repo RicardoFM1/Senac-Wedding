@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import Api from "../../Service/api";
 import styles from "./dashboard.module.css";
 import { useNavigate } from "react-router";
+import { Button } from "react-bootstrap";
+import { jsPDF } from "jspdf";
+import autoTable from "jspdf-autotable";
 
 const Dashboard = () => {
   const [retrieve, setRetrieve] = useState([]);
@@ -26,10 +29,10 @@ const Dashboard = () => {
   const buscarDashboard = async () => {
     try {
       const res = await Api.get("/dashboard");
-      
+
       if (res.status === 200) {
-        setDashboard(res.data.dados?.convidados);
-        console.log(res.data.dados)
+        setDashboard(res.data.dados.convidados);
+        console.log(res.data.dados.convidados, "dashbord");
       }
     } catch (err) {
       console.log(err);
@@ -38,17 +41,53 @@ const Dashboard = () => {
 
   useEffect(() => {
     buscarRetrieve();
-    buscarDashboard();
     if (!isAdmin) {
       navigate("/");
     }
+    buscarDashboard();
   }, []);
 
+  const handleExportar = () => {
+    const doc = new jsPDF();
+
+    doc.text("Relatório de convidados", 10, 10);
+    doc.text(`Gerado em ${new Date().toLocaleDateString}`, 14, 30);
+
+    const colunas = [
+      { header: "Confirmado", dataKey: "confirmados" },
+      { header: "Pendente", dataKey: "pendentes" },
+      { header: "Cancelado", dataKey: "cancelados" },
+      { header: "Total", dataKey: "total" }
+
+    ];
+
+    console.log(dashboard, "dashboard2");
+
+    const linhas = [
+      {
+        confirmados: dashboard?.convidados?.confirmados || 0,
+        pendentes: dashboard?.convidados?.pendentes || 0,
+        cancelados: dashboard?.convidados?.cancelados || 0,
+        total: dashboard?.convidados?.total || 0,
+      },
+    ];
+
+    autoTable(doc, {
+      columns: colunas,
+      body: linhas,
+      startY: 35,
+      theme: "striped",
+    });
+
+    doc.save("Relatório.pdf");
+  };
+
   const percentualConfirmado = Math.round(
-    (dashboard?.confirmados / dashboard?.total) || 0 * 100 
+    dashboard?.convidados?.confirmados / dashboard?.convidados?.total ||
+      0 * 100,
   );
   const percentualCancelado = Math.round(
-    (dashboard?.recusados / dashboard?.total) || 0 * 100,
+    dashboard?.convidados?.recusados / dashboard?.convidados?.total || 0 * 100,
   );
 
   return (
@@ -57,27 +96,32 @@ const Dashboard = () => {
         <h1>Dashboard</h1>
         <p>Visualize e monitore o sistema</p>
       </div>
+      <div>
+        <Button onClick={handleExportar}>Exportar PDF</Button>{" "}
+      </div>
 
       <div className={styles.statsGrid}>
         <div className={styles.statCard}>
           <div className={styles.statLabel}>Total Convidados</div>
-          <div className={styles.statValue}>{dashboard?.total}</div>
-          
+          <div className={styles.statValue}>{dashboard?.convidados?.total}</div>
         </div>
 
         <div className={styles.statCard}>
           <div className={`${styles.statLabel} ${styles.labelConfirmado}`}>
             Confirmados
           </div>
-          <div className={styles.statValue}>{dashboard.confirmados}</div>
-         
+          <div className={styles.statValue}>
+            {dashboard.convidados?.confirmados}
+          </div>
         </div>
 
         <div className={styles.statCard}>
           <div className={`${styles.statLabel} ${styles.labelPendente}`}>
             Pendentes
           </div>
-          <div className={styles.statValue}>{dashboard.pendentes}</div>
+          <div className={styles.statValue}>
+            {dashboard.convidados?.pendentes}
+          </div>
           <div className={styles.statSubtext}>Aguardando resposta</div>
         </div>
 
@@ -85,17 +129,17 @@ const Dashboard = () => {
           <div className={`${styles.statLabel} ${styles.labelRecusado}`}>
             Cancelados
           </div>
-          <div className={styles.statValue}>{dashboard.cancelados}</div>
-          
+          <div className={styles.statValue}>
+            {dashboard.convidados?.cancelados}
+          </div>
         </div>
       </div>
 
-      
       <div className={styles.progressSection}>
         <div className={styles.progressHeader}>
           <h3 className={styles.progressTitle}>Progresso das confirmações</h3>
           <span className={styles.progressCounter}>
-            {dashboard.confirmados} de {dashboard.total}
+            {dashboard.convidados?.confirmados} de {dashboard.convidados?.total}
           </span>
         </div>
 
@@ -103,13 +147,10 @@ const Dashboard = () => {
           <div
             className={styles.progressBar}
             style={{
-              width: `${(dashboard.confirmados / dashboard.total) * 100}%`,
+              width: `${(dashboard.convidados?.confirmados / dashboard.convidados?.total) * 100}%`,
             }}
           />
         </div>
-
-        
-        
       </div>
     </div>
   );
