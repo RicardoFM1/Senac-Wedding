@@ -92,14 +92,14 @@ class ConvidadoController
     public function atualizarConvidado()
     {
         try {
-            Middleware::validarMiddleware();
+            $jwt = Middleware::validarMiddleware();
             $dados = json_decode(file_get_contents('php://input'), true);
             $this->validarDados($dados);
 
             $email = $_GET['email_convidado'];
             http_response_code(200);
 
-            echo json_encode($this->convidadoService->atualizarConvidado($dados, $email));
+            echo json_encode($this->convidadoService->atualizarConvidado($dados, $email, $jwt));
             exit;
         } catch (Exception $e) {
             http_response_code($e->getCode());

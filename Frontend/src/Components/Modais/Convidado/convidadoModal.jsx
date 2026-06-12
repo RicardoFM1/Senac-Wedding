@@ -145,11 +145,12 @@ const ConvidadoModal = ({ dados, show, handleClose, submit, onDelete }) => {
               ""
             )}
             <Form.Group>
-              <Form.Label>Nº da mesa (Opcional)</Form.Label>
+              <Form.Label>Nº da mesa</Form.Label>
               <Form.Control
                 type="number"
                 value={formData?.mesa_idmesa}
                 name="mesa_idmesa"
+                required
                 placeholder="Nº da mesa do convidado"
                 onChange={handleChange}
               />

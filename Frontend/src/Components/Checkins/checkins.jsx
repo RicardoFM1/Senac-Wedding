@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import { Button, Form, InputGroup, Stack } from "react-bootstrap";
+import { Form, InputGroup, Stack } from "react-bootstrap";
 import { FaSearch } from "react-icons/fa";
-import { IoIosArrowForward } from "react-icons/io";
 import { toast } from "react-toastify";
 import Tabela from "../Tabela/tabela";
 import style from "./checkins.module.css";
@@ -12,8 +11,7 @@ const Checkins = () => {
   const [search, setSearch] = useState("");
   const [checkins, setCheckins] = useState([]);
   const [checkinsFiltrados, setCheckinsFiltrados] = useState([]);
-  const [convidados, setConvidados] = useState([]);
-  const [acompanhantes, setAcompanhantes] = useState([]);
+  const [selectedCheckin, setSelectedCheckin] = useState(null);
   const [show, setShow] = useState(false);
 
   const buscarCheckins = async () => {
@@ -28,23 +26,8 @@ const Checkins = () => {
     }
   };
 
-  const buscarConvidados = async () => {
-    try {
-      const res = await Api.get("/convidado");
-      if (res.status === 200) {
-        setConvidados(res.data.dados || []);
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-
-  
-
   useEffect(() => {
     buscarCheckins();
-    buscarConvidados();
   }, []);
 
   const handleFiltragem = () => {
@@ -61,24 +44,44 @@ const Checkins = () => {
     handleFiltragem();
   }, [search]);
 
-  const handleNovo = () => {
+  const handleSelected = (checkin) => {
+    setSelectedCheckin(checkin);
     setShow(true);
   };
 
   const handleClose = () => {
     setShow(false);
+    setSelectedCheckin(null);
+    buscarCheckins();
   };
 
-  const enviarDados = async (dados) => {
-    try {
-      const res = await Api.post("/checkin", dados);
-      if (res.status === 201) {
-        toast.success(res.data.mensagem || "Checkin criado com sucesso");
+  const handleConfirmarCheckin = async() => {
+    try{
+      if (!selectedCheckin) return;
+      console.log(selectedCheckin)
+      
+      const res = await Api.post('/checkin', {convidado_idconvidado: selectedCheckin.id_convidado})
+      if(res.status === 201){
+
+        
+        toast.success("Checkin confirmado");
         handleClose();
-        buscarCheckins();
       }
-    } catch (err) {
-      toast.error(err.response?.data?.mensagem || "Erro ao criar checkin");
+
+    }catch(err){
+      toast.error(err.response?.data?.mensagem)
+    }
+  };
+
+  const handleCancelarCheckin = async () => {
+    try{
+      const res = await Api.put(`/convidado?email_convidado=${selectedCheckin?.convidado?.email}`)
+      if(res.status === 200){
+        toast.success('Checkin cancelado com sucesso')
+        handleClose()
+      }
+    }catch(err){
+      toast.error(err.response?.data?.mensagem)
     }
   };
 
@@ -108,45 +111,47 @@ const Checkins = () => {
           </InputGroup>
         </Stack>
       </Stack>
-          <Button onClick={handleNovo} className={style.botaoAdicionar}>Adicionar registro</Button>
 
       <Tabela
         columns={[
-      
           {
             header: "Usuário",
             accessor: "usuario",
-            render: (row) => (row.usuario ? `${row.usuario.nome} - ${row.usuario.cpf}` : "")
+            render: (row) => (row.usuario ? `${row.usuario.nome || ''} - ${row.usuario.cpf || ''}` : "-")
           },
           {
             header: "Convidado",
             accessor: "convidado",
-            render: (row) => (row.convidado ? `${row.convidado.nome} - ${row.convidado.cpf}` : "")
+            render: (row) => (row.convidado ? `${row.convidado.nome} ${row.convidado.sobrenome}  - ${row.convidado.cpf}` : "")
           },
-          { header: "Data e hora", accessor: "data_e_hora" },
+          { header: "Data e hora", accessor: "data_e_hora", render: (row) => (row.data_e_hora ? `${row.data_e_hora} ` : "-") },
+          { header: "Status", accessor: "status", render: (row) => (row.status ? `${row.status} ` : "-") },
           { header: "Confirmação", accessor: "convidado.confirmacao", render: (row) => {
-            if(row.convidado.confirmacao === "confirmado"){
-              return <span className={style.spanConfirmacao}>Confirmado</span>
-            } else if(row.convidado.confirmacao === "pendente"){
-              return <span className={style.spanPendente}>Pendente</span>
-            } else if(row.convidado.confirmacao === "cancelado"){
-              return <span className={style.spanCancelado}>Cancelado</span>
-            } else {
-              return "";
-                }
-              
-              } },
+            if (row.convidado.confirmacao === "confirmado") {
+              return <span className={style.spanConfirmacao}>Confirmado</span>;
+            }
+
+            if (row.convidado.confirmacao === "pendente") {
+              return <span className={style.spanPendente}>Pendente</span>;
+            }
+
+            if (row.convidado.confirmacao === "cancelado") {
+              return <span className={style.spanCancelado}>Cancelado</span>;
+            }
+
+            return "-";
+          } },
         ]}
         rows={checkinsFiltrados}
-        keyField="id_checkin"
-        handleSelected={() => {}}
+        keyField="id_convidado"
+        handleSelected={handleSelected}
       />
       <CheckinModal
         show={show}
         handleClose={handleClose}
-        submit={enviarDados}
-        convidados={convidados}
-        acompanhantes={acompanhantes}
+        checkin={selectedCheckin}
+        onConfirm={handleConfirmarCheckin}
+        onCancel={handleCancelarCheckin}
       />
     </>
   );

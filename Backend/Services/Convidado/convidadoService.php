@@ -141,7 +141,7 @@ class ConvidadoService
 
 
 
-    public function atualizarConvidado($convidadoDados, $emailConvidado)
+    public function atualizarConvidado($convidadoDados, $emailConvidado, $jwt)
     {
         try {
             $convidadoDados['cpf'] = preg_replace('/\D/', '', $convidadoDados['cpf']);
@@ -161,8 +161,8 @@ class ConvidadoService
                 $convidadoDados['confirmacao'] = $convidado['dados']['confirmacao'];
             }
 
-            if ($convidado['dados']['confirmacao'] === 'confirmado') {
-                throw new Exception('Não é possivel atualizar um convidado já confirmado', 409);
+            if ($convidado['dados']['confirmacao'] === 'confirmado' && $convidadoDados['confirmacao'] === 'cancelado' && $jwt->dados->cargo_usuario !== 'administrador' ) {
+                throw new Exception('Não é possivel cancelar um convidado já confirmado', 409);
             }
 
             $mesaReferenciada = new MesaService()->buscarMesaPorId($convidadoDados['mesa_idmesa']);
