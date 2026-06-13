@@ -150,7 +150,7 @@ class CheckinService
 
            $stmt1 = $this->db->prepare('UPDATE convidado SET confirmacao = :status WHERE email = :email_antigo');
     $stmt1->execute([
-        ':status' => 'cancelado', 
+        ':status' => 'pendente', 
         ':email_antigo' => $emailConvidado
     ]);
 
