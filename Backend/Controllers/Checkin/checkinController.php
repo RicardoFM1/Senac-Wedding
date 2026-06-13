@@ -43,4 +43,25 @@ class CheckinController
             exit;
         }
     }
+
+    public function cancelarCheckin()
+    {
+        try {
+            $jwt = Middleware::validarMiddleware();
+            $email = $_GET['email_convidado'];
+            $id = $_GET['id_checkin'];
+
+            http_response_code(200);
+            echo json_encode($this->checkinService->cancelarCheckin($email, $id, $jwt));
+
+            exit;
+        } catch (Exception $e) {
+            http_response_code($e->getCode());
+            echo json_encode([
+                'sucesso' => false,
+                'mensagem' => $e->getMessage()
+            ]);
+            exit;
+        }
+    }
 }

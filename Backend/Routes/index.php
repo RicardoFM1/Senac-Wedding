@@ -105,6 +105,9 @@ if ($rota === '/checkin') {
     if ($metodo === 'POST') {
         $controller->criarCheckin();
     }
+    if ($metodo === 'PUT') {
+        $controller->cancelarCheckin();
+    }
 }
 
 if ($rota === '/acompanhante') {
@@ -125,18 +128,18 @@ if ($rota === '/acompanhante') {
 }
 
 if ($rota === '/retrieve') {
-    if($metodo === 'GET'){
+    if ($metodo === 'GET') {
 
         http_response_code(200);
         echo json_encode(Middleware::validarMiddleware());
         exit;
-        }
+    }
 }
 
 
 if ($rota === '/dashboard') {
     $controller = new DashboardController();
-    if ($metodo === 'GET'){
+    if ($metodo === 'GET') {
         $controller->listarDashboard();
     }
 }

@@ -62,8 +62,6 @@ const Checkins = () => {
       
       const res = await Api.post('/checkin', {convidado_idconvidado: selectedCheckin.id_convidado})
       if(res.status === 201){
-
-        
         toast.success("Checkin confirmado");
         handleClose();
       }
@@ -75,7 +73,7 @@ const Checkins = () => {
 
   const handleCancelarCheckin = async () => {
     try{
-      const res = await Api.put(`/convidado?email_convidado=${selectedCheckin?.convidado?.email}`)
+      const res = await Api.put(`/checkin?email_convidado=${selectedCheckin?.convidado?.email}&id_checkin=${selectedCheckin?.id_checkin}`)
       if(res.status === 200){
         toast.success('Checkin cancelado com sucesso')
         handleClose()
