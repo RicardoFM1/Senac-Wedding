@@ -89,7 +89,7 @@ const Checkins = () => {
         <Stack className="fw-bold mx-5 my-5">
           <h1>Checkins</h1>
           <p className="text-muted">Confirme o checkin de algum convidado</p>
-          <p className="text-muted">{checkinsFiltrados?.length} checkin(s) no total</p>
+          <p className="text-muted">{checkinsFiltrados?.length} convidados listados no total</p>
           <p className="text-muted">Clique na linha da tabela para acessar mais informações</p>
         </Stack>
         <Stack

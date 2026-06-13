@@ -21,7 +21,7 @@ class CheckinService
     {
         $query = $this->db->query("SELECT c.id_checkin, c.data_e_hora, c.status,
         co.nome as nome_convidado, co.email, co.sobrenome as sobrenome_convidado, co.id_convidado, co.confirmacao, co.cpf as cpf_convidado, u.nome as nome_usuario, u.cpf  as cpf_usuario
-        FROM convidado co LEFT JOIN checkin c ON c.convidado_idconvidado = co.id_convidado LEFT JOIN usuario u ON c.usuario_idusuario = u.id_usuario");
+        FROM convidado co  LEFT JOIN checkin c  ON c.convidado_idconvidado = co.id_convidado LEFT JOIN usuario u ON c.usuario_idusuario = u.id_usuario WHERE co.confirmacao IN ('confirmado', 'pendente') ");
 
         $query->execute();
         $resultado = [];
